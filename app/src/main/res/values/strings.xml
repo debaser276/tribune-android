@@ -8,4 +8,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="register">Register</string>
     <string name="have__account"><u>Already have an account?</u></string>
+    <string name="password_incorrect">Password incorrect</string>
+    <string name="please_wait">Please wait</string>
+    <string name="authentication">Authentication</string>
 </resources>
