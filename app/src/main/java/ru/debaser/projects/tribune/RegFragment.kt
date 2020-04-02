@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import kotlinx.android.synthetic.main.fragment_auth.*
+import kotlinx.android.synthetic.main.fragment_reg.*
 
-class AuthFragment : Fragment() {
+class RegFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_auth, container, false)
+        val view = inflater.inflate(R.layout.fragment_reg, container, false)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        noAccountTv.setOnClickListener {
-            view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToRegFragment())
+        haveAccountTv.setOnClickListener {
+            view.findNavController().navigate(RegFragmentDirections.actionRegFragmentToAuthFragment())
         }
     }
 }
