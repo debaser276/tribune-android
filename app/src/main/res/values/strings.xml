@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Tribune</string>
+    <string name="tribune_title">Tribune</string>
+    <string name="enter_login">Enter login</string>
+    <string name="enter_password">Enter password</string>
+    <string name="no_account"><u>Don\'t have an account?</u></string>
+    <string name="login">Login</string>
 </resources>
