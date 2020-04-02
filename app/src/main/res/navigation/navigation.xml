@@ -22,6 +22,8 @@
         tools:layout="@layout/fragment_reg">
         <action
             android:id="@+id/action_regFragment_to_authFragment"
-            app:destination="@id/authFragment" />
+            app:destination="@id/authFragment"
+            app:popUpTo="@+id/authFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
