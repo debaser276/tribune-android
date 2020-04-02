@@ -11,4 +11,7 @@
     <string name="password_incorrect">Password incorrect</string>
     <string name="please_wait">Please wait</string>
     <string name="authentication">Authentication</string>
+    <string name="success">Success</string>
+    <string name="authentication_failed">Authentication failed</string>
+    <string name="error_occured">Error ocured</string>
 </resources>
