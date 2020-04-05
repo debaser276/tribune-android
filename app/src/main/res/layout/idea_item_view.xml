@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ideaView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/avatarIv"
@@ -79,7 +78,7 @@
         android:id="@+id/votesIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/imageIv"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_eye"/>
@@ -90,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
         app:layout_constraintEnd_toStartOf="@id/votesIv"
-        app:layout_constraintTop_toTopOf="@id/votesIv"
+        app:layout_constraintTop_toTopOf="@id/dislikesTv"
         app:srcCompat="@drawable/ic_thumb_down"/>
 
     <TextView
@@ -109,7 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
         app:layout_constraintEnd_toStartOf="@id/dislikeIv"
-        app:layout_constraintTop_toTopOf="@id/votesIv"
+        app:layout_constraintBottom_toBottomOf="@id/likesTv"
         app:srcCompat="@drawable/ic_thumb_up"/>
 
     <TextView
@@ -119,7 +118,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/likeIv"
         app:layout_constraintTop_toTopOf="@id/votesIv"
-        app:layout_constraintBottom_toBottomOf="@id/likeIv"
+        app:layout_constraintBottom_toBottomOf="@id/votesIv"
         tools:text="999+"/>
 
 

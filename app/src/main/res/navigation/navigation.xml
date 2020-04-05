@@ -35,5 +35,11 @@
         android:id="@+id/ideasFragment"
         android:name="ru.debaser.projects.tribune.IdeasFragment"
         android:label="IdeasFragment"
-        tools:layout="@layout/fragment_ideas"/>
+        tools:layout="@layout/fragment_ideas">
+        <action
+            android:id="@+id/action_ideasFragment_to_authFragment"
+            app:destination="@id/authFragment"
+            app:popUpTo="@+id/authFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

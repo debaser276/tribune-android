@@ -34,4 +34,6 @@ object Repository {
 
     suspend fun authenticate(login: String, password: String) =
         API.authenticate(AuthRequestParams(login, password))
+
+    suspend fun getRecentIdeas() = API.getRecentIdeas()
 }

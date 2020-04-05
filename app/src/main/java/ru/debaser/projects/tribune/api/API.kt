@@ -2,7 +2,9 @@ package ru.debaser.projects.tribune.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import ru.debaser.projects.tribune.model.IdeaModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
@@ -12,5 +14,8 @@ interface API {
 
     @POST("api/v1/authentication")
     suspend fun authenticate(@Body authRequestParams: AuthRequestParams): Response<Me>
+
+    @GET("api/v1/ideas/recent")
+    suspend fun getRecentIdeas(): Response<MutableList<IdeaModel>>
 
 }

@@ -25,6 +25,9 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
         savedInstanceState: Bundle?
     ): View? {
         if (isAuthenticated()) {
+            val token = requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).getString(
+                AUTHENTICATED_SHARED_TOKEN, "")
+            Repository.createRetrofitWithAuthToken(token!!)
             this.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
         }
         return inflater.inflate(R.layout.fragment_auth, container, false)
@@ -48,7 +51,6 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
                             passwordEt.text.toString()
                         )
                         if (response.isSuccessful) {
-                            toast(getString(R.string.success), requireActivity())
                             setUserAuth(response)
                             Repository.createRetrofitWithAuthToken(response.body()!!.token)
                             view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
@@ -71,12 +73,8 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onStop() {
         super.onStop()
-        cancel()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
         hideKeyboard()
+        cancel()
     }
 
     private fun isAuthenticated() =
