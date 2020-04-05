@@ -3,7 +3,7 @@ package ru.debaser.projects.tribune.api.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 
-const val AUTH_TOKEN_HEADER = "Authorisation"
+const val AUTH_TOKEN_HEADER = "Authorization"
 
 class InjectAuthTokenInterceptor (val authToken: String): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
