@@ -41,5 +41,13 @@
             app:destination="@id/authFragment"
             app:popUpTo="@+id/authFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_ideasFragment_to_postIdeaFragment"
+            app:destination="@id/postIdeaFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/postIdeaFragment"
+        android:name="ru.debaser.projects.tribune.PostIdeaFragment"
+        android:label="PostIdeaFragment"
+        tools:layout="@layout/fragment_postidea"/>
 </navigation>

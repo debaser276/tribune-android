@@ -2,7 +2,6 @@ package ru.debaser.projects.tribune
 
 import android.content.Context
 import android.os.Bundle
-import android.text.method.TextKeyListener.clear
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +14,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
+import ru.debaser.projects.tribune.model.IdeaModel
 import java.io.IOException
 
 class IdeasFragment : Fragment(), CoroutineScope by MainScope() {
 
     private lateinit var ideaAdapter: IdeaAdapter
-    private var currentState: State = Empty()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,52 +27,68 @@ class IdeasFragment : Fragment(), CoroutineScope by MainScope() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_ideas, container, false)
-        currentState.refresh(view)
         return view
     }
 
-    private interface State {
-        fun refresh(view: View) {}
-    }
 
-    private inner class Empty: State {
-        override fun refresh(view: View) {
-            launch {
-                val dialog = LoadingDialog(requireActivity()).apply {
-                    setTitle(R.string.getting_ideas)
-                    show()
-                }
-                try {
-                    val result = Repository.getRecentIdeas()
-                    when {
-                        result.isSuccessful -> {
-                            with(container) {
+
+    override fun onStart() {
+        super.onStart()
+        launch {
+            val dialog = LoadingDialog(requireActivity()).apply {
+                setTitle(R.string.getting_ideas)
+                show()
+            }
+            try {
+                val result = Repository.getRecentIdeas()
+                when {
+                    result.isSuccessful -> {
+                        with(recyclerView) {
+                            if (result.body()?.size == 0) {
+                                showNoIdeas()
+                            }
+                            else {
                                 layoutManager = LinearLayoutManager(requireActivity())
-                                ideaAdapter = IdeaAdapter(result.body() ?: mutableListOf())
+                                ideaAdapter = IdeaAdapter(result.body() as MutableList<IdeaModel>)
                                 adapter = ideaAdapter
                             }
                         }
-                        result.code() == 401 -> {
-                            toast(getString(R.string.unauthorised), requireActivity())
-                            requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
-                                clear()
-                                apply()
-                            }
-                            view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
-                        }
-                        else -> {
-                            toast(getString(R.string.error_occured), requireActivity())
-                        }
                     }
-                } catch(e: IOException) {
-                    toast(getString(R.string.error_occured), requireContext())
-                } finally {
-                    dialog.dismiss()
+                    result.code() == 401 -> {
+                        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
+                            clear()
+                            apply()
+                        }
+                        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
+                    }
+                    else -> {
+                        showEmptyError(result.code().toString())
+                    }
                 }
+            } catch(e: IOException) {
+                showEmptyError(e::class.simpleName)
+            } finally {
+                dialog.dismiss()
             }
         }
     }
 
-    private inner class EmptyProgress: State
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fab.setOnClickListener {
+            view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
+        }
+    }
 
+    private fun showEmptyError(error: String?) {
+        errorRv.visibility = View.VISIBLE
+        errorTv.text = "${getString(R.string.error_occured)}: $error"
+        errorBtn.setOnClickListener {
+            errorRv.visibility = View.GONE
+        }
+    }
+
+    private fun showNoIdeas() {
+        noIdeasTv.visibility = View.VISIBLE
+    }
 }

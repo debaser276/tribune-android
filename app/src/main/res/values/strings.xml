@@ -18,4 +18,7 @@
     <string name="promoter">Promoter</string>
     <string name="getting_ideas">Getting ideas</string>
     <string name="unauthorised">Unauthorised</string>
+    <string name="try_again">Try again</string>
+    <string name="no_idea">There is no ideas yet. Create yours</string>
+    <string name="create_idea">Create Idea</string>
 </resources>
