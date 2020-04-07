@@ -1,16 +1,17 @@
 package ru.debaser.projects.tribune.api
 
+import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 import ru.debaser.projects.tribune.model.IdeaModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
 data class Me(val id: Long, val token: String, val isHater: Boolean, val isPromoter: Boolean, val isReader: Boolean)
 
-data class PostIdea(val content: String, val media: String, val link: String)
+data class PostIdeaRequest(val content: String, val media: String, val link: String)
+
+data class Image(val id: String)
 
 interface API {
 
@@ -18,9 +19,13 @@ interface API {
     suspend fun authenticate(@Body authRequestParams: AuthRequestParams): Response<Me>
 
     @GET("api/v1/ideas/recent")
-    suspend fun getRecentIdeas(): Response<MutableList<IdeaModel>>
+    suspend fun getRecentIdeas(): Response<List<IdeaModel>>
 
     @POST("api/v1/ideas")
-    suspend fun postIdea(@Body postIdea: PostIdea): Response<Void>
+    suspend fun postIdea(@Body postIdeaRequest: PostIdeaRequest): Response<Void>
+
+    @Multipart
+    @POST("api/v1/media")
+    suspend fun uploadImage(@Part file: MultipartBody.Part): Response<Image>
 
 }
