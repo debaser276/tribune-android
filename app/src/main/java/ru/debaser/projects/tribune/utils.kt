@@ -14,8 +14,8 @@ private val pattern  by lazy (LazyThreadSafetyMode.NONE) {
 
 fun isValid(password: String) = pattern.matcher(password).matches()
 
-fun Fragment.toast(message: CharSequence, context: Context) =
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).run {
+fun Fragment.toast(resId: Int, context: Context) =
+    Toast.makeText(context, context.getString(resId), Toast.LENGTH_SHORT).run {
         show()
     }
 

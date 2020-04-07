@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="8dp">
 
     <TextView
@@ -15,5 +16,52 @@
         android:gravity="center"
         android:textSize="24sp"
         android:text="@string/create_idea"/>
+
+    <EditText
+        android:id="@+id/contentEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_content"
+        app:layout_constraintTop_toBottomOf="@id/titleTv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/linkEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_link"
+        app:layout_constraintTop_toBottomOf="@id/contentEt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/addImageIv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/linkEt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add_a_photo"/>
+
+    <Button
+        android:id="@+id/postIdeaBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/post_idea"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/imageIv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        tools:srcCompat="@drawable/cat"
+        app:layout_constraintTop_toBottomOf="@id/addImageIv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/postIdeaBtn"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

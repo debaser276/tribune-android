@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 
-class IdeaAdapter(private val list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
+class IdeaAdapter(private val list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdeaViewHolder =
         IdeaViewHolder(
             this,

@@ -1,6 +1,7 @@
 package ru.debaser.projects.tribune
 
 const val BASE_URL = "http://10.0.2.2:9999/"
+//const val BASE_URL = "https://debaser-tribune.herokuapp.com/"
 const val API_SHARED_FILE = "API_shared_file"
 const val AUTHENTICATED_SHARED_TOKEN = "authenticated_shared_token"
 const val AUTHENTICATED_SHARED_ID = "authenticated_shared_id"

@@ -55,10 +55,10 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
                             Repository.createRetrofitWithAuthToken(response.body()!!.token)
                             view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
                         } else {
-                            toast(getString(R.string.authentication_failed), requireActivity())
+                            toast(R.string.authentication_failed, requireActivity())
                         }
                     } catch (e: IOException) {
-                        toast(getString(R.string.error_occured), requireActivity())
+                        toast(R.string.error_occured, requireActivity())
                     } finally {
                         dialog.dismiss()
                     }

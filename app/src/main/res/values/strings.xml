@@ -21,4 +21,16 @@
     <string name="try_again">Try again</string>
     <string name="no_idea">There is no ideas yet. Create yours</string>
     <string name="create_idea">Create Idea</string>
+    <string name="hint_content">Enter text for your Idea (100 letters)</string>
+    <string name="add_link">Add link</string>
+    <string name="post_idea">Post Idea</string>
+    <string name="image_uploading">Image uploading</string>
+    <string name="cant_upload_image">Image can\'t be uploaded</string>
+    <string name="create_new_idea">Creating the new idea</string>
+    <string name="success_idea">Idea created successfully</string>
+    <string-array name="post_item_list">
+        <item>Take a photo</item>
+        <item>Choose from gallery</item>
+        <item>Cancel</item>
+    </string-array>
 </resources>

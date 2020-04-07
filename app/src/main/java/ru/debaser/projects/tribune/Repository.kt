@@ -1,12 +1,20 @@
 package ru.debaser.projects.tribune
 
+import android.graphics.Bitmap
+import okhttp3.MediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.debaser.projects.tribune.api.API
 import ru.debaser.projects.tribune.api.AuthRequestParams
+import ru.debaser.projects.tribune.api.Image
+import ru.debaser.projects.tribune.api.PostIdeaRequest
 import ru.debaser.projects.tribune.api.interceptor.InjectAuthTokenInterceptor
+import java.io.ByteArrayOutputStream
 
 object Repository {
 
@@ -36,4 +44,14 @@ object Repository {
         API.authenticate(AuthRequestParams(login, password))
 
     suspend fun getRecentIdeas() = API.getRecentIdeas()
+
+    suspend fun postIdea(postIdeaRequest: PostIdeaRequest) = API.postIdea(postIdeaRequest)
+
+    suspend fun uploadImage(bitmap: Bitmap): Response<Image> {
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+        val reqFile = RequestBody.create(MediaType.parse("image/jpeg"), bos.toByteArray())
+        val body = MultipartBody.Part.createFormData("file", "image.jpg", reqFile)
+        return API.uploadImage(body)
+    }
 }
