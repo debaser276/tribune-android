@@ -1,6 +1,6 @@
 package ru.debaser.projects.tribune.model
 
-import ru.debaser.projects.tribune.BASE_URL
+import ru.debaser.projects.tribune.utils.BASE_URL
 
 data class IdeaModel (
     val id: Long,
@@ -11,7 +11,7 @@ data class IdeaModel (
     val created: Long,
     val content: String,
     val media: String,
-    val link: String?,
+    val link: String,
     val likes: Set<Long>,
     val dislikes: Set<Long>
 ) {

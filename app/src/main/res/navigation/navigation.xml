@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/authFragment"
-        android:name="ru.debaser.projects.tribune.AuthFragment"
+        android:name="ru.debaser.projects.tribune.view.AuthFragment"
         android:label="AuthFragment"
         tools:layout="@layout/fragment_auth">
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/regFragment"
-        android:name="ru.debaser.projects.tribune.RegFragment"
+        android:name="ru.debaser.projects.tribune.view.RegFragment"
         android:label="RegFragment"
         tools:layout="@layout/fragment_reg">
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/ideasFragment"
-        android:name="ru.debaser.projects.tribune.IdeasFragment"
+        android:name="ru.debaser.projects.tribune.view.IdeasFragment"
         android:label="IdeasFragment"
         tools:layout="@layout/fragment_ideas">
         <action
@@ -44,16 +44,28 @@
         <action
             android:id="@+id/action_ideasFragment_to_postIdeaFragment"
             app:destination="@id/postIdeaFragment" />
+        <action
+            android:id="@+id/action_ideasFragment_to_ideasByAuthorFragment"
+            app:destination="@id/ideasByAuthorFragment" />
     </fragment>
     <fragment
         android:id="@+id/postIdeaFragment"
-        android:name="ru.debaser.projects.tribune.PostIdeaFragment"
+        android:name="ru.debaser.projects.tribune.view.PostIdeaFragment"
         android:label="PostIdeaFragment"
         tools:layout="@layout/fragment_postidea">
         <action
             android:id="@+id/action_postIdeaFragment_to_ideasFragment"
             app:destination="@id/ideasFragment"
             app:popUpTo="@+id/ideasFragment"
-            app:popUpToInclusive="false" />
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/ideasByAuthorFragment"
+        android:name="ru.debaser.projects.tribune.view.IdeasByAuthorFragment"
+        android:label="IdeasByAuthorFragment"
+        tools:layout="@layout/fragment_ideas">
+        <argument
+            android:name="authorId"
+            app:argType="long" />
     </fragment>
 </navigation>

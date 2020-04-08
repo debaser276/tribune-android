@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.view
 
 import android.content.Context
 import android.os.Bundle
@@ -15,7 +15,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import ru.debaser.projects.tribune.api.Me
+import ru.debaser.projects.tribune.*
+import ru.debaser.projects.tribune.repository.Me
+import ru.debaser.projects.tribune.repository.Repository
+import ru.debaser.projects.tribune.utils.*
 import java.io.IOException
 
 class AuthFragment : Fragment(), CoroutineScope by MainScope() {
@@ -27,7 +30,9 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
         if (isAuthenticated()) {
             val token = requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).getString(
                 AUTHENTICATED_SHARED_TOKEN, "")
-            Repository.createRetrofitWithAuthToken(token!!)
+            Repository.createRetrofitWithAuthToken(
+                token!!
+            )
             this.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
         }
         return inflater.inflate(R.layout.fragment_auth, container, false)
@@ -41,18 +46,23 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
                 passwordTil.error = getString(R.string.password_incorrect)
             } else {
                 launch {
-                    val dialog = LoadingDialog(requireActivity()).apply {
+                    val dialog = LoadingDialog(
+                        requireActivity()
+                    ).apply {
                         setTitle(getString(R.string.authentication))
                         show()
                     }
                     try {
-                        val response = Repository.authenticate(
-                            loginEt.text.toString(),
-                            passwordEt.text.toString()
-                        )
+                        val response =
+                            Repository.authenticate(
+                                loginEt.text.toString(),
+                                passwordEt.text.toString()
+                            )
                         if (response.isSuccessful) {
                             setUserAuth(response)
-                            Repository.createRetrofitWithAuthToken(response.body()!!.token)
+                            Repository.createRetrofitWithAuthToken(
+                                response.body()!!.token
+                            )
                             view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
                         } else {
                             toast(R.string.authentication_failed, requireActivity())

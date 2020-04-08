@@ -1,8 +1,7 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.view
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,19 +10,22 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import retrofit2.http.HTTP
+import kotlinx.coroutines.*
+import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.model.IdeaModel
+import ru.debaser.projects.tribune.repository.Repository
+import ru.debaser.projects.tribune.utils.API_SHARED_FILE
+import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
-class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
+open class IdeasFragment: Fragment(),
+    CoroutineScope by MainScope(),
+    IdeaAdapter.OnAvatarClickListener
+{
 
-    private lateinit var ideaAdapter: IdeaAdapter
-    private var currentState: State<IdeaModel> = Empty()
+    lateinit var ideaAdapter: IdeaAdapter
+    private lateinit var currentState: State<IdeaModel>
     private lateinit var dialog: LoadingDialog
 
     override fun onCreateView(
@@ -44,9 +46,11 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
         fun refresh() {}
         fun fail(err: String?) {}
         fun newData(list: List<T>) {}
+        fun release() {}
     }
 
-    private inner class Empty: State<IdeaModel> {
+    private inner class Empty:
+        State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
             showLoadingDialog(true)
@@ -54,13 +58,13 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private inner class EmptyProgress: State<IdeaModel> {
+    private inner class EmptyProgress:
+        State<IdeaModel> {
         override fun fail(err: String?) {
             currentState = EmptyError()
             showLoadingDialog(false)
             showEmptyError(err)
         }
-
         override fun newData(list: List<IdeaModel>) {
             showLoadingDialog(false)
             if (list.isEmpty()) {
@@ -70,9 +74,13 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
                 setAdapter(list)
             }
         }
+        override fun release() {
+            showLoadingDialog(false)
+        }
     }
 
-    private inner class EmptyError: State<IdeaModel> {
+    private inner class EmptyError:
+        State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
             showLoadingDialog(true)
@@ -80,8 +88,24 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private inner class Data: State<IdeaModel> {
+    private inner class Data:
+        State<IdeaModel> {
 
+    }
+
+    private inner class Refresh:
+        State<IdeaModel> {
+        override fun newData(list: List<IdeaModel>) {
+            currentState = Data()
+            showLoadingDialog(false)
+            setAdapter(list)
+        }
+
+        override fun fail(err: String?) {
+            currentState = EmptyError()
+            showLoadingDialog(false)
+            showEmptyError(err)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,12 +118,13 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
     private fun getRecent() {
         launch {
             try {
-                val result = Repository.getRecentIdeas()
+                val result = getRecentFromRepository()
                 when {
                     result.isSuccessful -> {
                         currentState.newData(result.body() ?: listOf())
                     }
                     result.code() == 401-> {
+                        currentState.release()
                         requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
                             clear()
                             apply()
@@ -112,16 +137,21 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
                 }
             } catch(e: IOException) {
                 currentState.fail(e::class.simpleName)
-            } finally {
-                dialog.dismiss()
             }
         }
     }
 
-    private fun setAdapter(list: List<IdeaModel>) {
+    open suspend fun getRecentFromRepository() = withContext(Dispatchers.IO) {
+        Repository.getRecentIdeas()
+    }
+
+
+    open fun setAdapter(list: List<IdeaModel>) {
         with (recyclerView) {
             layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list)
+            ideaAdapter = IdeaAdapter(list).apply {
+                onAvatarClickListener = this@IdeasFragment
+            }
             adapter = ideaAdapter
         }
     }
@@ -141,12 +171,23 @@ class IdeasFragment: Fragment(), CoroutineScope by MainScope() {
 
     private fun showLoadingDialog(show: Boolean) {
         if (show) {
-            dialog = LoadingDialog(requireActivity()).apply {
+            dialog = LoadingDialog(
+                requireActivity()
+            )
+                .apply {
                 setTitle(R.string.getting_ideas)
                 show()
             }
         } else {
             dialog.dismiss()
         }
+    }
+
+    override fun onAvatarClickListener(ideaModel: IdeaModel) {
+        view?.findNavController()?.navigate(
+            IdeasFragmentDirections.actionIdeasFragmentToIdeasByAuthorFragment(
+                ideaModel.authorId
+            )
+        )
     }
 }

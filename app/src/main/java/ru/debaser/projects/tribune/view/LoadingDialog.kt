@@ -1,9 +1,10 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.view
 
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.TextView
+import ru.debaser.projects.tribune.R
 
 class LoadingDialog(context: Context): AlertDialog(context) {
     init {

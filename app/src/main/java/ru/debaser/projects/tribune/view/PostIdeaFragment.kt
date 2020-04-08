@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.view
 
 import android.app.Activity
 import android.content.Intent
@@ -21,7 +21,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.debaser.projects.tribune.api.PostIdeaRequest
+import ru.debaser.projects.tribune.*
+import ru.debaser.projects.tribune.repository.PostIdeaRequest
+import ru.debaser.projects.tribune.repository.Repository
+import ru.debaser.projects.tribune.utils.BASE_URL
+import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
 class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
@@ -62,19 +66,22 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
         }
         postIdeaBtn.setOnClickListener {
             launch {
-                val dialog = LoadingDialog(requireActivity()).apply {
+                val dialog = LoadingDialog(
+                    requireActivity()
+                ).apply {
                     setTitle(getString(R.string.create_new_idea))
                     show()
                 }
                 if (mediaUrl.isNotEmpty() && contentEt.text.isNotEmpty()) {
                     try {
-                        val result = Repository.postIdea(
-                            PostIdeaRequest(
-                                content = contentEt.text.toString(),
-                                media = mediaUrl,
-                                link = linkEt.text.toString()
+                        val result =
+                            Repository.postIdea(
+                                PostIdeaRequest(
+                                    content = contentEt.text.toString(),
+                                    media = mediaUrl,
+                                    link = linkEt.text.toString()
+                                )
                             )
-                        )
                         if (result.isSuccessful) {
                             toast(R.string.success_idea, requireActivity())
                             view.findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
@@ -101,7 +108,7 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
-                    val bitmap = data?.extras?.get("data") as Bitmap
+                    val bitmap = data.extras?.get("data") as Bitmap
                     uploadImage(bitmap)
                 }
                 REQUEST_IMAGE_PICK -> {
@@ -109,7 +116,7 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                     try {
                         selectedPhotoUri?.let {
                             val bitmap: Bitmap
-                            if(Build.VERSION.SDK_INT < 28) {
+                            if (Build.VERSION.SDK_INT < 28) {
                                 bitmap = MediaStore.Images.Media.getBitmap(
                                     requireActivity().contentResolver,
                                     selectedPhotoUri
@@ -130,12 +137,16 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun uploadImage(bitmap: Bitmap) {
         launch {
-            val dialog = LoadingDialog(requireContext()).apply {
+            val dialog = LoadingDialog(
+                requireContext()
+            )
+                .apply {
                 setTitle(getString(R.string.image_uploading))
                 show()
             }
             try {
-                val imageUploadResult = Repository.uploadImage(bitmap)
+                val imageUploadResult =
+                    Repository.uploadImage(bitmap)
                 if (imageUploadResult.isSuccessful) {
                     loadImage(imageIv, "${BASE_URL}api/v1/static/${imageUploadResult.body()!!.id}")
                     mediaUrl = imageUploadResult.body()!!.id
@@ -153,7 +164,9 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
     private fun takePhoto() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                startActivityForResult(takePictureIntent,
+                    REQUEST_IMAGE_CAPTURE
+                )
             }
         }
     }
@@ -165,6 +178,8 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
     private fun chooseFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
+        startActivityForResult(galleryIntent,
+            REQUEST_IMAGE_PICK
+        )
     }
 }

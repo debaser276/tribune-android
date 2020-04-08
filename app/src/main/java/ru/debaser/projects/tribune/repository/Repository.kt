@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.repository
 
 import android.graphics.Bitmap
 import okhttp3.MediaType
@@ -9,11 +9,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.debaser.projects.tribune.api.API
-import ru.debaser.projects.tribune.api.AuthRequestParams
-import ru.debaser.projects.tribune.api.Image
-import ru.debaser.projects.tribune.api.PostIdeaRequest
-import ru.debaser.projects.tribune.api.interceptor.InjectAuthTokenInterceptor
+import ru.debaser.projects.tribune.utils.BASE_URL
+import ru.debaser.projects.tribune.repository.interceptor.InjectAuthTokenInterceptor
 import java.io.ByteArrayOutputStream
 
 object Repository {
@@ -23,7 +20,7 @@ object Repository {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private var API: API = retrofit.create(ru.debaser.projects.tribune.api.API::class.java)
+    private var API: API = retrofit.create(ru.debaser.projects.tribune.repository.API::class.java)
 
     fun createRetrofitWithAuthToken(authToken: String) {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
@@ -37,7 +34,7 @@ object Repository {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        API = retrofit.create(ru.debaser.projects.tribune.api.API::class.java)
+        API = retrofit.create(ru.debaser.projects.tribune.repository.API::class.java)
     }
 
     suspend fun authenticate(login: String, password: String) =
@@ -54,4 +51,6 @@ object Repository {
         val body = MultipartBody.Part.createFormData("file", "image.jpg", reqFile)
         return API.uploadImage(body)
     }
+
+    suspend fun getRecentByAuthor(authorId: Long) = API.getRecentByAuthor(authorId)
 }

@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.utils
 
 import android.app.Activity
 import android.content.Context

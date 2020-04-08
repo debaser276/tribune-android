@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune.api.interceptor
+package ru.debaser.projects.tribune.repository.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response

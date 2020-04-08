@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 
-class IdeaAdapter(private val list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
+class IdeaAdapter(val list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
+
+    var onAvatarClickListener: OnAvatarClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdeaViewHolder =
         IdeaViewHolder(
             this,
@@ -17,5 +20,9 @@ class IdeaAdapter(private val list: List<IdeaModel>): RecyclerView.Adapter<IdeaV
 
     override fun onBindViewHolder(holder: IdeaViewHolder, position: Int) {
         holder.bind(list[position])
+    }
+
+    interface OnAvatarClickListener {
+        fun onAvatarClickListener(ideaModel: IdeaModel)
     }
 }

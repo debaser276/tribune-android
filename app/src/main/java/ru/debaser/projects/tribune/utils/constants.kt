@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune
+package ru.debaser.projects.tribune.utils
 
 const val BASE_URL = "http://10.0.2.2:9999/"
 //const val BASE_URL = "https://debaser-tribune.herokuapp.com/"

@@ -1,4 +1,4 @@
-package ru.debaser.projects.tribune.api
+package ru.debaser.projects.tribune.repository
 
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -27,5 +27,8 @@ interface API {
     @Multipart
     @POST("api/v1/media")
     suspend fun uploadImage(@Part file: MultipartBody.Part): Response<Image>
+
+    @GET("api/v1/ideas/recent/{id}")
+    suspend fun getRecentByAuthor(@Path("id") authorId: Long): Response<List<IdeaModel>>
 
 }
