@@ -7,7 +7,12 @@ import ru.debaser.projects.tribune.model.IdeaModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
-data class Me(val id: Long, val token: String, val isHater: Boolean, val isPromoter: Boolean, val isReader: Boolean)
+data class Me(val id: Long,
+              val token: String,
+              val isHater: Boolean,
+              val isPromoter: Boolean,
+              val isReader: Boolean,
+              val avatar: String)
 
 data class PostIdeaRequest(val content: String, val media: String, val link: String)
 
