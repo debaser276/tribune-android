@@ -34,7 +34,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
             }
             if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
             contentTv.text = idea.content
-            loadImages(imageIv, idea.url)
+            loadImages(imageIv, idea.mediaUrl)
         }
     }
 

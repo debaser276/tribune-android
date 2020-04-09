@@ -15,6 +15,6 @@ data class IdeaModel (
     val likes: Set<Long>,
     val dislikes: Set<Long>
 ) {
-    val url
+    val mediaUrl
         get() = "${BASE_URL}api/v1/static/$media"
 }
