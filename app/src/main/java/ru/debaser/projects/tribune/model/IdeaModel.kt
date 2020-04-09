@@ -8,6 +8,7 @@ data class IdeaModel (
     val author: String,
     val isHater: Boolean,
     val isPromoter: Boolean,
+    val avatar: String,
     val created: Long,
     val content: String,
     val media: String,
@@ -17,4 +18,6 @@ data class IdeaModel (
 ) {
     val mediaUrl
         get() = "${BASE_URL}api/v1/static/$media"
+    val avatarUrl
+        get() = "${BASE_URL}api/v1/static/$avatar"
 }
