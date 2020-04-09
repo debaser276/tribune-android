@@ -172,12 +172,9 @@ open class IdeasFragment: Fragment(),
     private fun showLoadingDialog(show: Boolean) {
         if (show) {
             dialog = LoadingDialog(
-                requireActivity()
-            )
-                .apply {
-                setTitle(R.string.getting_ideas)
-                show()
-            }
+                requireActivity(),
+                R.string.getting_ideas
+            ).apply { show() }
         } else {
             dialog.dismiss()
         }

@@ -47,11 +47,8 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
             } else {
                 launch {
                     val dialog = LoadingDialog(
-                        requireActivity()
-                    ).apply {
-                        setTitle(getString(R.string.authentication))
-                        show()
-                    }
+                        requireActivity(),
+                        R.string.authentication).apply { show() }
                     try {
                         val response =
                             Repository.authenticate(
@@ -100,6 +97,5 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
             putBoolean(AUTHENTICATED_SHARED_ISPROMOTER, response.body()!!.isPromoter)
             putBoolean(AUTHENTICATED_SHARED_ISREADER, response.body()!!.isReader)
         }
-
     }
 }

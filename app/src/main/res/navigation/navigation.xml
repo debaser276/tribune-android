@@ -30,6 +30,9 @@
             app:destination="@id/authFragment"
             app:popUpTo="@+id/authFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_regFragment_to_ideasFragment"
+            app:destination="@id/ideasFragment" />
     </fragment>
     <fragment
         android:id="@+id/ideasFragment"

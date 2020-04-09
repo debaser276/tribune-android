@@ -40,6 +40,9 @@ object Repository {
     suspend fun authenticate(login: String, password: String) =
         API.authenticate(AuthRequestParams(login, password))
 
+    suspend fun register(username: String, password: String) =
+        API.register(AuthRequestParams(username, password))
+
     suspend fun getRecentIdeas() = API.getRecentIdeas()
 
     suspend fun postIdea(postIdeaRequest: PostIdeaRequest) = API.postIdea(postIdeaRequest)

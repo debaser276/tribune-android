@@ -66,13 +66,10 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
         }
         postIdeaBtn.setOnClickListener {
             launch {
-                val dialog = LoadingDialog(
-                    requireActivity()
-                ).apply {
-                    setTitle(getString(R.string.create_new_idea))
-                    show()
-                }
                 if (mediaUrl.isNotEmpty() && contentEt.text.isNotEmpty()) {
+                    val dialog = LoadingDialog(
+                        requireActivity(),
+                        R.string.create_new_idea).apply { show() }
                     try {
                         val result =
                             Repository.postIdea(
@@ -138,12 +135,8 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
     private fun uploadImage(bitmap: Bitmap) {
         launch {
             val dialog = LoadingDialog(
-                requireContext()
-            )
-                .apply {
-                setTitle(getString(R.string.image_uploading))
-                show()
-            }
+                requireContext(),
+                R.string.image_uploading).apply { show() }
             try {
                 val imageUploadResult =
                     Repository.uploadImage(bitmap)

@@ -15,6 +15,9 @@ data class Image(val id: String)
 
 interface API {
 
+    @POST("api/v1/registration")
+    suspend fun register(@Body authRequestParams: AuthRequestParams): Response<Me>
+
     @POST("api/v1/authentication")
     suspend fun authenticate(@Body authRequestParams: AuthRequestParams): Response<Me>
 
