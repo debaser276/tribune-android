@@ -7,6 +7,8 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.idea_item_view.view.*
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder(view) {
 
@@ -25,7 +27,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
     fun bind(idea: IdeaModel) {
         with (itemView) {
             authorTv.text = idea.author
-            dateTv.text = idea.created.toString()
+            dateTv.text = SimpleDateFormat("dd MMMM").format(Date(idea.created))
             when {
                 idea.isHater -> badgeTv.text = context.getString(R.string.hater)
                 idea.isPromoter -> badgeTv.text = context.getString(R.string.promoter)
