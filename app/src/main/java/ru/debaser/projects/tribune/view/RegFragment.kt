@@ -118,7 +118,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                     requireContext(),
                     R.string.set_avatar).apply { show() }
                 try {
-                    Repository.addAvatar(avatarId)
+                    if (avatarId.isNotEmpty()) Repository.addAvatar(avatarId)
                     view?.findNavController()?.navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
                 } catch (e: IOException) {
                     toast(R.string.error_occured, requireActivity())
