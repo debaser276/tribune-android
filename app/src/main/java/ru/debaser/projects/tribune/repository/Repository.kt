@@ -56,4 +56,6 @@ object Repository {
     }
 
     suspend fun getRecentByAuthor(authorId: Long) = API.getRecentByAuthor(authorId)
+
+    suspend fun addAvatar(id: String) = API.addAvatar(Image(id = id))
 }

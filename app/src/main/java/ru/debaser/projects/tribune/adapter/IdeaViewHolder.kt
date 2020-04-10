@@ -26,6 +26,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
 
     fun bind(idea: IdeaModel) {
         with (itemView) {
+            loadImages(avatarIv, idea.avatarUrl)
             authorTv.text = idea.author
             dateTv.text = SimpleDateFormat("dd MMMM").format(Date(idea.created))
             when {

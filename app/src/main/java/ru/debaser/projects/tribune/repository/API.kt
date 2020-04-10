@@ -39,4 +39,7 @@ interface API {
     @GET("api/v1/ideas/recent/{id}")
     suspend fun getRecentByAuthor(@Path("id") authorId: Long): Response<List<IdeaModel>>
 
+    @POST("api/v1/avatar")
+    suspend fun addAvatar(@Body image: Image): Response<Void>
+
 }

@@ -31,6 +31,9 @@
     <string name="passwords_not_match">Passwords don\'t match</string>
     <string name="registration">Registration</string>
     <string name="registration_failed">Registration failed</string>
+    <string name="add_avatar">Add avatar:</string>
+    <string name="ok">Ok</string>
+    <string name="set_avatar">Set avatar</string>
     <string-array name="post_item_list">
         <item>Take a photo</item>
         <item>Choose from gallery</item>

@@ -45,11 +45,6 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
         return inflater.inflate(R.layout.fragment_postidea, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.i("TAG", "post")
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         addImageIv.setOnClickListener {

@@ -75,12 +75,41 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <RelativeLayout
+            android:id="@+id/avatarRl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/add_avatar"
+                android:layout_toStartOf="@id/avatarIv"
+                android:layout_marginEnd="8dp"/>
+
+            <ImageView
+                android:id="@+id/avatarIv"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:srcCompat="@drawable/ic_no_avatar"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
         <Button
             android:id="@+id/regBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="@string/register" />
+
+        <Button
+            android:id="@+id/addAvatarBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
