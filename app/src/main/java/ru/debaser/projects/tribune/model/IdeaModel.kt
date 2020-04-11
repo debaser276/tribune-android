@@ -13,11 +13,22 @@ data class IdeaModel (
     val content: String,
     val media: String,
     val link: String,
-    val likes: Set<Long>,
-    val dislikes: Set<Long>
+    var likes: Set<Long>,
+    var dislikes: Set<Long>
 ) {
+    var likeActionPerforming = false
+    var dislikeActionPerforming = false
+
     val mediaUrl
         get() = "${BASE_URL}api/v1/static/$media"
     val avatarUrl
         get() = "${BASE_URL}api/v1/static/$avatar"
+
+    fun updateLikes(idea: IdeaModel) {
+        likes = idea.likes
+    }
+
+    fun updateDislikes(idea: IdeaModel) {
+        dislikes = idea.dislikes
+    }
 }

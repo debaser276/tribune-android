@@ -1,5 +1,6 @@
 package ru.debaser.projects.tribune.adapter
 
+import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -20,10 +21,10 @@ class VoteViewHolder(adapter: VoteAdapter, view: View): RecyclerView.ViewHolder(
             with (votesIv) {
                 if (vote.isUp) {
                     setImageResource(R.drawable.ic_thumb_up)
-                    setColorFilter(R.color.green)
+                    setColorFilter(Color.GREEN)
                 } else {
                     setImageResource(R.drawable.ic_thumb_down)
-                    setColorFilter(R.color.red)
+                    setColorFilter(Color.RED)
                 }
             }
             if (vote.avatar.isNotEmpty()) loadImages(avatarIv, vote.avatar)

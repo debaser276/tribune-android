@@ -34,6 +34,7 @@
     <string name="add_avatar">Add avatar:</string>
     <string name="ok">Ok</string>
     <string name="set_avatar">Set avatar</string>
+    <string name="vote_once">You can vote only once</string>
     <string-array name="post_item_list">
         <item>Take a photo</item>
         <item>Choose from gallery</item>

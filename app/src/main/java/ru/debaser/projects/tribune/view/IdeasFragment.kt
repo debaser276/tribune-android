@@ -16,12 +16,15 @@ import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.API_SHARED_FILE
+import ru.debaser.projects.tribune.utils.getUserId
 import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
 open class IdeasFragment: Fragment(),
     CoroutineScope by MainScope(),
-    IdeaAdapter.OnAvatarClickListener
+    IdeaAdapter.OnAvatarClickListener,
+    IdeaAdapter.OnLikeClickListener,
+    IdeaAdapter.OnDislikeClickListener
 {
 
     lateinit var ideaAdapter: IdeaAdapter
@@ -151,6 +154,8 @@ open class IdeasFragment: Fragment(),
             layoutManager = LinearLayoutManager(requireActivity())
             ideaAdapter = IdeaAdapter(list).apply {
                 onAvatarClickListener = this@IdeasFragment
+                onLikeClickListener = this@IdeasFragment
+                onDislikeClickListener = this@IdeasFragment
             }
             adapter = ideaAdapter
         }
@@ -186,5 +191,54 @@ open class IdeasFragment: Fragment(),
                 ideaModel.authorId
             )
         )
+    }
+
+    override fun onLikeClickListener(idea: IdeaModel, position: Int) {
+        if (!isAlreadyVote(idea)) {
+            launch {
+                idea.likeActionPerforming = true
+                try {
+                    ideaAdapter.notifyItemChanged(position)
+                    val response = Repository.like(idea.id)
+                    if (response.isSuccessful) {
+                        idea.updateLikes(response.body()!!)
+                    }
+                } catch (e: IOException) {
+                    toast(R.string.error_occured, requireActivity())
+                } finally {
+                    idea.likeActionPerforming = false
+                    ideaAdapter.notifyItemChanged(position)
+                }
+            }
+        } else {
+            toast(R.string.vote_once, requireActivity())
+        }
+    }
+
+    override fun onDislikeClickListener(idea: IdeaModel, position: Int) {
+        if (!isAlreadyVote(idea)) {
+            launch {
+                idea.dislikeActionPerforming = true
+                try {
+                    ideaAdapter.notifyItemChanged(position)
+                    val response = Repository.dislike(idea.id)
+                    if (response.isSuccessful) {
+                        idea.updateDislikes(response.body()!!)
+                    }
+                } catch (e: IOException) {
+                    toast(R.string.error_occured, requireActivity())
+                } finally {
+                    idea.dislikeActionPerforming = false
+                    ideaAdapter.notifyItemChanged(position)
+                }
+            }
+        } else {
+            toast(R.string.vote_once, requireActivity())
+        }
+    }
+
+    private fun isAlreadyVote(idea: IdeaModel): Boolean {
+        val id = requireActivity().getUserId()
+        return idea.likes.contains(id) || idea.dislikes.contains(id)
     }
 }

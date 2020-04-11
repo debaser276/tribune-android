@@ -42,4 +42,10 @@ interface API {
     @POST("api/v1/avatar")
     suspend fun addAvatar(@Body image: Image): Response<Void>
 
+    @PUT("api/v1/ideas/{id}/like")
+    suspend fun like(@Path("id") id: Long): Response<IdeaModel>
+
+    @PUT("api/v1/ideas/{id}/dislike")
+    suspend fun dislike(@Path("id") id: Long): Response<IdeaModel>
+
 }

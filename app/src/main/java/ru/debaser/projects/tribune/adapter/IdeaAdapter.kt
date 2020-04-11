@@ -9,6 +9,8 @@ import ru.debaser.projects.tribune.model.IdeaModel
 class IdeaAdapter(val list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
 
     var onAvatarClickListener: OnAvatarClickListener? = null
+    var onLikeClickListener: OnLikeClickListener? = null
+    var onDislikeClickListener: OnDislikeClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdeaViewHolder =
         IdeaViewHolder(
@@ -24,5 +26,13 @@ class IdeaAdapter(val list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolde
 
     interface OnAvatarClickListener {
         fun onAvatarClickListener(ideaModel: IdeaModel)
+    }
+
+    interface OnLikeClickListener {
+        fun onLikeClickListener(idea: IdeaModel, position: Int)
+    }
+
+    interface OnDislikeClickListener {
+        fun onDislikeClickListener(idea: IdeaModel, position: Int)
     }
 }
