@@ -77,10 +77,10 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                             Repository.createRetrofitWithAuthToken(response.body()!!.token)
                             addAvatar()
                         } else {
-                            toast(R.string.registration_failed, requireActivity())
+                            toast(R.string.registration_failed)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured, requireActivity())
+                        toast(R.string.error_occured)
                     } finally {
                         dialog.dismiss()
                     }
@@ -121,7 +121,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                     if (avatarId.isNotEmpty()) Repository.addAvatar(avatarId)
                     view?.findNavController()?.navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
                 } catch (e: IOException) {
-                    toast(R.string.error_occured, requireActivity())
+                    toast(R.string.error_occured)
                 } finally {
                     dialog.dismiss()
                 }
@@ -185,10 +185,10 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                     loadImage(avatarIv, "${BASE_URL}api/v1/static/${imageUploadResult.body()!!.id}")
                     avatarId = imageUploadResult.body()!!.id
                 } else {
-                    toast(R.string.cant_upload_image, requireActivity())
+                    toast(R.string.cant_upload_image)
                 }
             } catch (e: IOException) {
-                toast(R.string.error_occured, requireActivity())
+                toast(R.string.error_occured)
             } finally {
                 dialog.dismiss()
             }

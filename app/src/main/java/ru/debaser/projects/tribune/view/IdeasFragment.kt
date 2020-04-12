@@ -117,7 +117,7 @@ open class IdeasFragment: Fragment(),
         override fun fail(err: String) {
             currentState = Data()
             showLoadingDialog(false)
-            showToastError(err)
+            showToast(err)
         }
     }
 
@@ -198,12 +198,12 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private fun showToastError(err: String) {
-        toast("${getString(R.string.error_occured)}: $err", requireActivity())
+    private fun showToast(err: String) {
+        toast("${getString(R.string.error_occured)}: $err")
     }
 
     private fun showNoIdeas() {
-        toast(R.string.no_idea, requireContext())
+        toast(R.string.no_idea)
     }
 
     private fun showLoadingDialog(show: Boolean) {
@@ -236,14 +236,14 @@ open class IdeasFragment: Fragment(),
                         idea.updateLikes(response.body()!!)
                     }
                 } catch (e: IOException) {
-                    toast(R.string.error_occured, requireActivity())
+                    toast(R.string.error_occured)
                 } finally {
                     idea.likeActionPerforming = false
                     ideaAdapter.notifyItemChanged(position)
                 }
             }
         } else {
-            toast(R.string.vote_once, requireActivity())
+            toast(R.string.vote_once)
         }
     }
 
@@ -258,14 +258,14 @@ open class IdeasFragment: Fragment(),
                         idea.updateDislikes(response.body()!!)
                     }
                 } catch (e: IOException) {
-                    toast(R.string.error_occured, requireActivity())
+                    toast(R.string.error_occured)
                 } finally {
                     idea.dislikeActionPerforming = false
                     ideaAdapter.notifyItemChanged(position)
                 }
             }
         } else {
-            toast(R.string.vote_once, requireActivity())
+            toast(R.string.vote_once)
         }
     }
 

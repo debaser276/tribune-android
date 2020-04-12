@@ -75,13 +75,13 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                                 )
                             )
                         if (result.isSuccessful) {
-                            toast(R.string.success_idea, requireActivity())
+                            toast(R.string.success_idea)
                             view.findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
                         } else {
-                            toast(R.string.error_occured, requireActivity())
+                            toast(R.string.error_occured)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured, requireActivity())
+                        toast(R.string.error_occured)
                     } finally {
                         dialog.dismiss()
                     }
@@ -139,10 +139,10 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                     loadImage(imageIv, "${BASE_URL}api/v1/static/${imageUploadResult.body()!!.id}")
                     mediaUrl = imageUploadResult.body()!!.id
                 } else {
-                    toast(R.string.cant_upload_image, requireActivity())
+                    toast(R.string.cant_upload_image)
                 }
             } catch (e: IOException) {
-                toast(R.string.error_occured, requireActivity())
+                toast(R.string.error_occured)
             } finally {
                 dialog.dismiss()
             }

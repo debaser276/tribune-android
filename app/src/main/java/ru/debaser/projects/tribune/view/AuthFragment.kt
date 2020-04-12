@@ -62,10 +62,10 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
                             )
                             view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
                         } else {
-                            toast(R.string.authentication_failed, requireActivity())
+                            toast(R.string.authentication_failed)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured, requireActivity())
+                        toast(R.string.error_occured)
                     } finally {
                         dialog.dismiss()
                     }
