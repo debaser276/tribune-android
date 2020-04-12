@@ -11,12 +11,20 @@ class IdeasByAuthorFragment : IdeasFragment() {
     override fun setAdapter(list: List<IdeaModel>) {
         with (recyclerView) {
             layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list)
+            ideaAdapter = IdeaAdapter(list).apply {
+                onLikeClickListener = this@IdeasByAuthorFragment
+                onDislikeClickListener = this@IdeasByAuthorFragment
+            }
             adapter = ideaAdapter
         }
     }
     override suspend fun getRecentFromRepository(): Response<List<IdeaModel>> {
         val args = IdeasByAuthorFragmentArgs.fromBundle(arguments!!)
         return Repository.getRecentByAuthor(args.authorId)
+    }
+
+    override suspend fun getAfterFromRepository(id: Long): Response<List<IdeaModel>> {
+        val args = IdeasByAuthorFragmentArgs.fromBundle(arguments!!)
+        return Repository.getAfterByAuthor(id, args.authorId)
     }
 }

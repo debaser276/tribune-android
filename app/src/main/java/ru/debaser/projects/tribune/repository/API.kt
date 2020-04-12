@@ -27,7 +27,7 @@ interface API {
     suspend fun authenticate(@Body authRequestParams: AuthRequestParams): Response<Me>
 
     @GET("api/v1/ideas/recent")
-    suspend fun getRecentIdeas(): Response<List<IdeaModel>>
+    suspend fun getRecent(): Response<List<IdeaModel>>
 
     @POST("api/v1/ideas")
     suspend fun postIdea(@Body postIdeaRequest: PostIdeaRequest): Response<Void>
@@ -48,4 +48,9 @@ interface API {
     @PUT("api/v1/ideas/{id}/dislike")
     suspend fun dislike(@Path("id") id: Long): Response<IdeaModel>
 
+    @GET("api/v1/ideas/{id}/after")
+    suspend fun getAfter(@Path("id") id: Long): Response<List<IdeaModel>>
+
+    @GET("api/v1/ideas/{id}/after/{authorId}")
+    suspend fun getAfterByAuthor(@Path("id") id: Long, @Path("authorId") authorId: Long): Response<List<IdeaModel>>
 }

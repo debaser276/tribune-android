@@ -39,6 +39,16 @@ open class IdeasFragment: Fragment(),
         return inflater.inflate(R.layout.fragment_ideas, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fab.setOnClickListener {
+            view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
+        }
+        swipeContainer.setOnRefreshListener {
+            currentState.refresh()
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         currentState = Empty()
@@ -47,7 +57,7 @@ open class IdeasFragment: Fragment(),
 
     private interface State<T> {
         fun refresh() {}
-        fun fail(err: String?) {}
+        fun fail(err: String) {}
         fun newData(list: List<T>) {}
         fun release() {}
     }
@@ -61,9 +71,8 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private inner class EmptyProgress:
-        State<IdeaModel> {
-        override fun fail(err: String?) {
+    private inner class EmptyProgress: State<IdeaModel> {
+        override fun fail(err: String) {
             currentState = EmptyError()
             showLoadingDialog(false)
             showEmptyError(err)
@@ -82,8 +91,7 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private inner class EmptyError:
-        State<IdeaModel> {
+    private inner class EmptyError: State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
             showLoadingDialog(true)
@@ -91,30 +99,25 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private inner class Data:
-        State<IdeaModel> {
-
+    private inner class Data: State<IdeaModel> {
+        override fun refresh() {
+            currentState = Refresh()
+            showLoadingDialog(true)
+            getAfter()
+        }
     }
 
-    private inner class Refresh:
-        State<IdeaModel> {
+    private inner class Refresh: State<IdeaModel> {
         override fun newData(list: List<IdeaModel>) {
             currentState = Data()
             showLoadingDialog(false)
             setAdapter(list)
         }
 
-        override fun fail(err: String?) {
-            currentState = EmptyError()
+        override fun fail(err: String) {
+            currentState = Data()
             showLoadingDialog(false)
-            showEmptyError(err)
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        fab.setOnClickListener {
-            view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
+            showToastError(err)
         }
     }
 
@@ -139,13 +142,38 @@ open class IdeasFragment: Fragment(),
                     }
                 }
             } catch(e: IOException) {
-                currentState.fail(e::class.simpleName)
+                currentState.fail(e::class.simpleName ?: "")
+            }
+        }
+    }
+
+    private fun getAfter() {
+        launch {
+            try {
+                val response = getAfterFromRepository(ideaAdapter.list[0].id)
+                if (response.isSuccessful) {
+                    val newIdeas = response.body()!!
+                    currentState.newData(newIdeas + ideaAdapter.list)
+                    ideaAdapter.notifyItemRangeInserted(0, newIdeas.size)
+                } else {
+                    currentState.fail(response.code().toString())
+                }
+            } catch (e: IOException) {
+                currentState.fail(e::class.simpleName ?: "")
+            } catch (e: IndexOutOfBoundsException) {
+                currentState.fail(e::class.simpleName ?: "")
+            } finally {
+                swipeContainer.isRefreshing = false
             }
         }
     }
 
     open suspend fun getRecentFromRepository() = withContext(Dispatchers.IO) {
-        Repository.getRecentIdeas()
+        Repository.getRecent()
+    }
+
+    open suspend fun getAfterFromRepository(id: Long) = withContext(Dispatchers.IO) {
+        Repository.getAfter(id)
     }
 
 
@@ -168,6 +196,10 @@ open class IdeasFragment: Fragment(),
             currentState.refresh()
             errorRv.visibility = View.GONE
         }
+    }
+
+    private fun showToastError(err: String) {
+        toast("${getString(R.string.error_occured)}: $err", requireActivity())
     }
 
     private fun showNoIdeas() {

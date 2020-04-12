@@ -43,7 +43,7 @@ object Repository {
     suspend fun register(username: String, password: String) =
         API.register(AuthRequestParams(username, password))
 
-    suspend fun getRecentIdeas() = API.getRecentIdeas()
+    suspend fun getRecent() = API.getRecent()
 
     suspend fun postIdea(postIdeaRequest: PostIdeaRequest) = API.postIdea(postIdeaRequest)
 
@@ -62,4 +62,8 @@ object Repository {
     suspend fun like(id: Long) = API.like(id)
 
     suspend fun dislike(id: Long) = API.dislike(id)
+
+    suspend fun getAfter(id: Long) = API.getAfter(id)
+
+    suspend fun getAfterByAuthor(id: Long, authorId: Long) = API.getAfterByAuthor(id, authorId)
 }
