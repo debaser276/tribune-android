@@ -51,6 +51,9 @@ interface API {
     @GET("api/v1/ideas/{id}/after")
     suspend fun getAfter(@Path("id") id: Long): Response<List<IdeaModel>>
 
+    @GET("api/v1/ideas/{id}/before")
+    suspend fun getBefore(@Path("id") id: Long): Response<List<IdeaModel>>
+
     @GET("api/v1/ideas/{id}/after/{authorId}")
     suspend fun getAfterByAuthor(@Path("id") id: Long, @Path("authorId") authorId: Long): Response<List<IdeaModel>>
 }

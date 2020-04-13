@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.fragment_ideas.*
 import kotlinx.coroutines.*
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
+import ru.debaser.projects.tribune.adapter.onScrolledToFooter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.API_SHARED_FILE
@@ -60,6 +61,7 @@ open class IdeasFragment: Fragment(),
         fun fail(err: String) {}
         fun newData(list: List<T>) {}
         fun release() {}
+        fun loadNew() {}
     }
 
     private inner class Empty:
@@ -80,7 +82,7 @@ open class IdeasFragment: Fragment(),
         override fun newData(list: List<IdeaModel>) {
             showLoadingDialog(false)
             if (list.isEmpty()) {
-                showNoIdeas()
+                toast(R.string.no_idea)
             } else {
                 currentState = Data()
                 setAdapter(list)
@@ -102,22 +104,50 @@ open class IdeasFragment: Fragment(),
     private inner class Data: State<IdeaModel> {
         override fun refresh() {
             currentState = Refresh()
-            showLoadingDialog(true)
             getAfter()
+        }
+        override fun loadNew() {
+            currentState = AddProgress()
+            showProgressBar(true)
+            getBefore()
         }
     }
 
     private inner class Refresh: State<IdeaModel> {
         override fun newData(list: List<IdeaModel>) {
             currentState = Data()
-            showLoadingDialog(false)
-            setAdapter(list)
+            ideaAdapter.list.addAll(list)
         }
-
         override fun fail(err: String) {
             currentState = Data()
             showLoadingDialog(false)
-            showToast(err)
+            showErrorToast(err)
+        }
+    }
+
+    private inner class AddProgress: State<IdeaModel> {
+        override fun newData(list: List<IdeaModel>) {
+            if (list.isEmpty()) {
+                currentState = AllData()
+                toast(R.string.loaded_all_ideas)
+                showProgressBar(false)
+            } else {
+                currentState = Data()
+                showProgressBar(false)
+                ideaAdapter.list.addAll(list)
+            }
+        }
+        override fun fail(err: String) {
+            currentState = Data()
+            showProgressBar(false)
+            showErrorToast(err)
+        }
+    }
+
+    private inner class AllData: State<IdeaModel> {
+        override fun refresh() {
+            currentState = Refresh()
+            getAfter()
         }
     }
 
@@ -153,7 +183,7 @@ open class IdeasFragment: Fragment(),
                 val response = getAfterFromRepository(ideaAdapter.list[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
-                    currentState.newData(newIdeas + ideaAdapter.list)
+                    currentState.newData(newIdeas)
                     ideaAdapter.notifyItemRangeInserted(0, newIdeas.size)
                 } else {
                     currentState.fail(response.code().toString())
@@ -168,6 +198,23 @@ open class IdeasFragment: Fragment(),
         }
     }
 
+    private fun getBefore() {
+        launch {
+            try {
+                val response = getBeforeFromRepository(ideaAdapter.list[ideaAdapter.list.size - 1].id)
+                if (response.isSuccessful) {
+                    val newIdeas = response.body()!!
+                    currentState.newData(newIdeas)
+                    ideaAdapter.notifyItemRangeInserted(ideaAdapter.list.size, newIdeas.size)
+                } else {
+                    currentState.fail(response.code().toString())
+                }
+            } catch (e: IOException) {
+                currentState.fail(e::class.simpleName ?: "")
+            }
+        }
+    }
+
     open suspend fun getRecentFromRepository() = withContext(Dispatchers.IO) {
         Repository.getRecent()
     }
@@ -176,15 +223,20 @@ open class IdeasFragment: Fragment(),
         Repository.getAfter(id)
     }
 
+    open suspend fun getBeforeFromRepository(id: Long) = withContext(Dispatchers.IO) {
+        Repository.getBefore(id)
+    }
+
 
     open fun setAdapter(list: List<IdeaModel>) {
         with (recyclerView) {
             layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list).apply {
+            ideaAdapter = IdeaAdapter(list.toMutableList()).apply {
                 onAvatarClickListener = this@IdeasFragment
                 onLikeClickListener = this@IdeasFragment
                 onDislikeClickListener = this@IdeasFragment
             }
+            onScrolledToFooter { currentState.loadNew() }
             adapter = ideaAdapter
         }
     }
@@ -198,12 +250,8 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private fun showToast(err: String) {
+    private fun showErrorToast(err: String) {
         toast("${getString(R.string.error_occured)}: $err")
-    }
-
-    private fun showNoIdeas() {
-        toast(R.string.no_idea)
     }
 
     private fun showLoadingDialog(show: Boolean) {
@@ -214,6 +262,14 @@ open class IdeasFragment: Fragment(),
             ).apply { show() }
         } else {
             dialog.dismiss()
+        }
+    }
+
+    private fun showProgressBar(show: Boolean) {
+        if (show) {
+            progressBar.visibility = View.VISIBLE
+        } else {
+            progressBar.visibility = View.GONE
         }
     }
 

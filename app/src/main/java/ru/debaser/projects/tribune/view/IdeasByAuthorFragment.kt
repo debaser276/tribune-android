@@ -11,7 +11,7 @@ class IdeasByAuthorFragment : IdeasFragment() {
     override fun setAdapter(list: List<IdeaModel>) {
         with (recyclerView) {
             layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list).apply {
+            ideaAdapter = IdeaAdapter(list.toMutableList()).apply {
                 onLikeClickListener = this@IdeasByAuthorFragment
                 onDislikeClickListener = this@IdeasByAuthorFragment
             }

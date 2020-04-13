@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 
-class IdeaAdapter(var list: List<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
+class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
 
     var onAvatarClickListener: OnAvatarClickListener? = null
     var onLikeClickListener: OnLikeClickListener? = null

@@ -65,5 +65,7 @@ object Repository {
 
     suspend fun getAfter(id: Long) = API.getAfter(id)
 
+    suspend fun getBefore(id: Long) = API.getBefore(id)
+
     suspend fun getAfterByAuthor(id: Long, authorId: Long) = API.getAfterByAuthor(id, authorId)
 }

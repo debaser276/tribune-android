@@ -2,6 +2,8 @@ package ru.debaser.projects.tribune.model
 
 import ru.debaser.projects.tribune.utils.BASE_URL
 
+
+
 data class IdeaModel (
     val id: Long,
     val authorId: Long,
