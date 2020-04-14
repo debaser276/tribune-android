@@ -42,7 +42,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
 
     fun bind(idea: IdeaModel) {
         with (itemView) {
-            if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatarUrl)
+            if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
             authorTv.text = idea.author
             dateTv.text = SimpleDateFormat("dd MMMM").format(Date(idea.created))
             when {
@@ -51,7 +51,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
             }
             if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
             contentTv.text = idea.content
-            loadImages(imageIv, idea.mediaUrl)
+            loadImages(imageIv, idea.media)
 
             val likesCount = idea.likes.size
             when {

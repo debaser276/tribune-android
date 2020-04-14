@@ -21,11 +21,6 @@ data class IdeaModel (
     var likeActionPerforming = false
     var dislikeActionPerforming = false
 
-    val mediaUrl
-        get() = "${BASE_URL}api/v1/static/$media"
-    val avatarUrl
-        get() = "${BASE_URL}api/v1/static/$avatar"
-
     fun updateLikes(idea: IdeaModel) {
         likes = idea.likes
     }

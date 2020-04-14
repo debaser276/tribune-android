@@ -136,7 +136,7 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                 val imageUploadResult =
                     Repository.uploadImage(bitmap)
                 if (imageUploadResult.isSuccessful) {
-                    loadImage(imageIv, "${BASE_URL}api/v1/static/${imageUploadResult.body()!!.id}")
+                    loadImage(imageIv, imageUploadResult.body()!!.id)
                     mediaUrl = imageUploadResult.body()!!.id
                 } else {
                     toast(R.string.cant_upload_image)

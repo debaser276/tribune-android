@@ -182,7 +182,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                 val imageUploadResult =
                     Repository.uploadImage(bitmap)
                 if (imageUploadResult.isSuccessful) {
-                    loadImage(avatarIv, "${BASE_URL}api/v1/static/${imageUploadResult.body()!!.id}")
+                    loadImage(avatarIv, imageUploadResult.body()!!.id)
                     avatarId = imageUploadResult.body()!!.id
                 } else {
                     toast(R.string.cant_upload_image)
