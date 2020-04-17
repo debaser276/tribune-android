@@ -52,13 +52,19 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
             if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
             authorTv.text = idea.author
             dateTv.text = SimpleDateFormat("dd MMMM").format(Date(idea.created))
-            when {
-                idea.isHater -> badgeTv.text = context.getString(R.string.hater)
-                idea.isPromoter -> badgeTv.text = context.getString(R.string.promoter)
-            }
             if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
             contentTv.text = idea.content
             loadImages(imageIv, idea.media)
+
+            when (idea.isHater) {
+                true -> haterTv.visibility = View.VISIBLE
+                false -> haterTv.visibility = View.GONE
+            }
+
+            when (idea.isPromoter) {
+                true -> promoterTv.visibility = View.VISIBLE
+                false -> promoterTv.visibility = View.GONE
+            }
 
             val likesCount = idea.likes.size
             when {
@@ -88,7 +94,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
                 }
             }
             when {
-                idea.likeActionPerforming -> {
+                idea.dislikeActionPerforming -> {
                     dislikesTv.setTextColor(Color.BLUE)
                     dislikeIv.setColorFilter(Color.BLUE)
                 }

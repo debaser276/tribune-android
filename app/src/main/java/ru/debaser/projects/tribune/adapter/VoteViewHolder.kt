@@ -37,6 +37,15 @@ class VoteViewHolder(adapter: VoteAdapter, view: View): RecyclerView.ViewHolder(
                 }
             }
             if (vote.avatar.isNotEmpty()) loadImages(avatarIv, vote.avatar)
+            when (vote.isHater) {
+                true -> haterTv.visibility = View.VISIBLE
+                false -> haterTv.visibility = View.GONE
+            }
+
+            when (vote.isPromoter) {
+                true -> promoterTv.visibility = View.VISIBLE
+                false -> promoterTv.visibility = View.GONE
+            }
             authorTv.text = vote.author
             createdTv.text = SimpleDateFormat("dd MMMM").format(Date(vote.created))
         }

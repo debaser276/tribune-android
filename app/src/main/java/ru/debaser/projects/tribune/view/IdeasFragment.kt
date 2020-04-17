@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -43,6 +44,7 @@ open class IdeasFragment: Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.subtitle
         fab.setOnClickListener {
             view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
         }
