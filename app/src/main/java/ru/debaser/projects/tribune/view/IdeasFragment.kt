@@ -25,7 +25,8 @@ open class IdeasFragment: Fragment(),
     CoroutineScope by MainScope(),
     IdeaAdapter.OnAvatarClickListener,
     IdeaAdapter.OnLikeClickListener,
-    IdeaAdapter.OnDislikeClickListener
+    IdeaAdapter.OnDislikeClickListener,
+    IdeaAdapter.OnVotesClickListener
 {
 
     lateinit var ideaAdapter: IdeaAdapter
@@ -229,12 +230,13 @@ open class IdeasFragment: Fragment(),
 
 
     open fun setAdapter(list: List<IdeaModel>) {
-        with (recyclerView) {
+        with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
             ideaAdapter = IdeaAdapter(list.toMutableList()).apply {
                 onAvatarClickListener = this@IdeasFragment
                 onLikeClickListener = this@IdeasFragment
                 onDislikeClickListener = this@IdeasFragment
+                onVotesClickListener = this@IdeasFragment
             }
             onScrolledToFooter { currentState.loadNew() }
             adapter = ideaAdapter
@@ -323,6 +325,10 @@ open class IdeasFragment: Fragment(),
         } else {
             toast(R.string.vote_once)
         }
+    }
+
+    override fun onVotesClickListener(idea: IdeaModel) {
+        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
     }
 
     private fun isAlreadyVote(idea: IdeaModel): Boolean {

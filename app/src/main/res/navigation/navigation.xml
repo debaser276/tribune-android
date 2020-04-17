@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_ideasFragment_to_ideasByAuthorFragment"
             app:destination="@id/ideasByAuthorFragment" />
+        <action
+            android:id="@+id/action_ideasFragment_to_votesFragment"
+            app:destination="@id/votesFragment" />
     </fragment>
     <fragment
         android:id="@+id/postIdeaFragment"
@@ -72,5 +75,22 @@
         <argument
             android:name="authorId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_ideasByAuthorFragment_to_votesFragment"
+            app:destination="@id/votesFragment"
+            app:popUpTo="@+id/ideasFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/votesFragment"
+        android:name="ru.debaser.projects.tribune.view.VotesFragment"
+        android:label="fragment_votes"
+        tools:layout="@layout/fragment_votes" >
+        <argument
+            android:name="ideaId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_votesFragment_to_ideasByAuthorFragment"
+            app:destination="@id/ideasByAuthorFragment"
+            app:popUpTo="@+id/ideasFragment" />
     </fragment>
 </navigation>

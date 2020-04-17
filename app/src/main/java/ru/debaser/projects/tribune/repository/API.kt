@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 import ru.debaser.projects.tribune.model.IdeaModel
+import ru.debaser.projects.tribune.model.VoteModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
@@ -56,4 +57,7 @@ interface API {
 
     @GET("api/v1/ideas/{id}/after/{authorId}")
     suspend fun getAfterByAuthor(@Path("id") id: Long, @Path("authorId") authorId: Long): Response<List<IdeaModel>>
+
+    @GET("api/v1/votes/{id}")
+    suspend fun getVotes(@Path("id") id: Long): Response<List<VoteModel>>
 }

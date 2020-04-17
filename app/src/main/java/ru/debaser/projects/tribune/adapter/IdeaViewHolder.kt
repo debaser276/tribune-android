@@ -37,6 +37,13 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
                     adapter.onDislikeClickListener?.onDislikeClickListener(item, currentPosition)
                 }
             }
+            votesIv.setOnClickListener {
+                val currentPosition = adapterPosition
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    val item = adapter.list[currentPosition]
+                    adapter.onVotesClickListener?.onVotesClickListener(item)
+                }
+            }
         }
     }
 

@@ -74,8 +74,6 @@
         tools:srcCompat="@drawable/cat"
         android:adjustViewBounds="true"/>
 
-
-
     <ImageView
         android:id="@+id/votesIv"
         android:layout_width="wrap_content"

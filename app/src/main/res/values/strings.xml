@@ -36,6 +36,7 @@
     <string name="set_avatar">Set avatar</string>
     <string name="vote_once">You can vote only once</string>
     <string name="loaded_all_ideas">Loaded all ideas</string>
+    <string name="getting_votes">Getting votes</string>
     <string-array name="post_item_list">
         <item>Take a photo</item>
         <item>Choose from gallery</item>

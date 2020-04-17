@@ -8,6 +8,8 @@ import ru.debaser.projects.tribune.model.VoteModel
 
 class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolder>() {
 
+    var onAvatarClickListener: OnAvatarClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VoteViewHolder =
         VoteViewHolder(
             this,
@@ -15,10 +17,13 @@ class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolde
                 .inflate(R.layout.vote_item_view, parent, false)
         )
 
-
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: VoteViewHolder, position: Int) {
         holder.bind(list[position])
+    }
+
+    interface OnAvatarClickListener {
+        fun onAvatarClickListener(vote: VoteModel)
     }
 }

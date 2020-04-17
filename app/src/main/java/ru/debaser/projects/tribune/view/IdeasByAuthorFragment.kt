@@ -1,5 +1,6 @@
 package ru.debaser.projects.tribune.view
 
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
 import retrofit2.Response
@@ -9,14 +10,8 @@ import ru.debaser.projects.tribune.model.IdeaModel
 
 class IdeasByAuthorFragment : IdeasFragment() {
     override fun setAdapter(list: List<IdeaModel>) {
-        with (recyclerView) {
-            layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list.toMutableList()).apply {
-                onLikeClickListener = this@IdeasByAuthorFragment
-                onDislikeClickListener = this@IdeasByAuthorFragment
-            }
-            adapter = ideaAdapter
-        }
+        super.setAdapter(list)
+        ideaAdapter.onAvatarClickListener = null
     }
     override suspend fun getRecentFromRepository(): Response<List<IdeaModel>> {
         val args = IdeasByAuthorFragmentArgs.fromBundle(arguments!!)
@@ -27,4 +22,10 @@ class IdeasByAuthorFragment : IdeasFragment() {
         val args = IdeasByAuthorFragmentArgs.fromBundle(arguments!!)
         return Repository.getAfterByAuthor(id, args.authorId)
     }
+
+    override fun onVotesClickListener(idea: IdeaModel) {
+        view?.findNavController()?.navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToVotesFragment(idea.id))
+    }
+
+
 }
