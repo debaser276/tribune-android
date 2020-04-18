@@ -92,6 +92,7 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setUserAuth(response: Response<Me>) {
         requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
             putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
+            putString(AUTHENTICATED_SHARED_USERNAME, response.body()!!.username)
             putString(AUTHENTICATED_SHARED_TOKEN, response.body()!!.token)
             putBoolean(AUTHENTICATED_SHARED_ISHATER, response.body()!!.isHater)
             putBoolean(AUTHENTICATED_SHARED_ISPROMOTER, response.body()!!.isPromoter)

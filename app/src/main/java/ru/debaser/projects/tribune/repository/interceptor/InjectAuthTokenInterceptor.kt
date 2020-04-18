@@ -5,7 +5,7 @@ import okhttp3.Response
 
 const val AUTH_TOKEN_HEADER = "Authorization"
 
-class InjectAuthTokenInterceptor (val authToken: String): Interceptor {
+class InjectAuthTokenInterceptor (private val authToken: String): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val requestWithToken = originalRequest.newBuilder()

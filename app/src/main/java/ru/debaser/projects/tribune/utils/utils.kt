@@ -31,6 +31,9 @@ fun Fragment.hideKeyboard() {
 fun Context.getUserId(): Long = this.getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE)
     .getLong(AUTHENTICATED_SHARED_ID, 0)
 
+fun Context.getUsername(): String = this.getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE)
+    .getString(AUTHENTICATED_SHARED_USERNAME, "") ?: ""
+
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)

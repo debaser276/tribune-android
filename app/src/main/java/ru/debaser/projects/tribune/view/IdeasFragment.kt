@@ -19,6 +19,7 @@ import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.API_SHARED_FILE
 import ru.debaser.projects.tribune.utils.getUserId
+import ru.debaser.projects.tribune.utils.getUsername
 import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
@@ -44,7 +45,7 @@ open class IdeasFragment: Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.subtitle
+        (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
         fab.setOnClickListener {
             view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
         }

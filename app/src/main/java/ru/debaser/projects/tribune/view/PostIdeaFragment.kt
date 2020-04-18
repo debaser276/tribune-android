@@ -7,7 +7,6 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.PostIdeaRequest
 import ru.debaser.projects.tribune.repository.Repository
-import ru.debaser.projects.tribune.utils.BASE_URL
 import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
@@ -107,15 +105,14 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                     val selectedPhotoUri = data.data
                     try {
                         selectedPhotoUri?.let {
-                            val bitmap: Bitmap
-                            if (Build.VERSION.SDK_INT < 28) {
-                                bitmap = MediaStore.Images.Media.getBitmap(
+                            val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                                MediaStore.Images.Media.getBitmap(
                                     requireActivity().contentResolver,
                                     selectedPhotoUri
                                 )
                             } else {
                                 val source = ImageDecoder.createSource(requireActivity().contentResolver, selectedPhotoUri)
-                                bitmap = ImageDecoder.decodeBitmap(source)
+                                ImageDecoder.decodeBitmap(source)
                             }
                             uploadImage(bitmap)
                         }

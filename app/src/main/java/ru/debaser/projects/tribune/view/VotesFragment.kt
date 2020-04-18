@@ -23,7 +23,7 @@ class VotesFragment : Fragment(),
     VoteAdapter.OnAvatarClickListener
 {
 
-    lateinit var voteAdapter: VoteAdapter
+    private lateinit var voteAdapter: VoteAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,

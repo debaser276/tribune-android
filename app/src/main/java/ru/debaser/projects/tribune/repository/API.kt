@@ -10,6 +10,7 @@ data class AuthRequestParams(val username: String, val password: String)
 
 data class Me(val id: Long,
               val token: String,
+              val username: String,
               val isHater: Boolean,
               val isPromoter: Boolean,
               val isReader: Boolean,

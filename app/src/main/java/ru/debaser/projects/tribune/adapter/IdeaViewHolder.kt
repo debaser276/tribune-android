@@ -6,7 +6,6 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.idea_item_view.view.*
-import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.utils.getUserId
 import java.text.SimpleDateFormat

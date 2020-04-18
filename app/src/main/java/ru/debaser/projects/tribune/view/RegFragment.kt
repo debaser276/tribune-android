@@ -97,6 +97,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setUserAuth(response: Response<Me>) {
         requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
             putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
+            putString(AUTHENTICATED_SHARED_USERNAME, response.body()!!.username)
             putString(AUTHENTICATED_SHARED_TOKEN, response.body()!!.token)
             putBoolean(AUTHENTICATED_SHARED_ISHATER, response.body()!!.isHater)
             putBoolean(AUTHENTICATED_SHARED_ISPROMOTER, response.body()!!.isPromoter)
@@ -153,15 +154,14 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
                     val selectedPhotoUri = data.data
                     try {
                         selectedPhotoUri?.let {
-                            val bitmap: Bitmap
-                            if (Build.VERSION.SDK_INT < 28) {
-                                bitmap = MediaStore.Images.Media.getBitmap(
+                            val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                                MediaStore.Images.Media.getBitmap(
                                     requireActivity().contentResolver,
                                     selectedPhotoUri
                                 )
                             } else {
                                 val source = ImageDecoder.createSource(requireActivity().contentResolver, selectedPhotoUri)
-                                bitmap = ImageDecoder.decodeBitmap(source)
+                                ImageDecoder.decodeBitmap(source)
                             }
                             uploadImage(bitmap)
                         }

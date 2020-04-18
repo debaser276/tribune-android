@@ -11,13 +11,11 @@
     <string name="password_incorrect">Password incorrect</string>
     <string name="please_wait">Please wait</string>
     <string name="authentication">Authentication</string>
-    <string name="success">Success</string>
     <string name="authentication_failed">Authentication failed</string>
     <string name="error_occured">Error ocured</string>
     <string name="hater">Hater</string>
     <string name="promoter">Promoter</string>
     <string name="getting_ideas">Getting ideas</string>
-    <string name="unauthorised">Unauthorised</string>
     <string name="try_again">Try again</string>
     <string name="no_idea">There is no ideas yet. Create yours</string>
     <string name="create_idea">Create Idea</string>
@@ -32,7 +30,7 @@
     <string name="registration">Registration</string>
     <string name="registration_failed">Registration failed</string>
     <string name="add_avatar">Add avatar:</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="set_avatar">Set avatar</string>
     <string name="vote_once">You can vote only once</string>
     <string name="loaded_all_ideas">Loaded all ideas</string>
