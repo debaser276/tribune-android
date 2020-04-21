@@ -34,6 +34,9 @@ fun Context.getUserId(): Long = this.getSharedPreferences(API_SHARED_FILE, Conte
 fun Context.getUsername(): String = this.getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE)
     .getString(AUTHENTICATED_SHARED_USERNAME, "") ?: ""
 
+fun Context.getIsUserReader(): Boolean= this.getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE)
+    .getBoolean(AUTHENTICATED_SHARED_ISREADER, false)
+
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
