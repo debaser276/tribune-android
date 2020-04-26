@@ -1,6 +1,8 @@
 package ru.debaser.projects.tribune.view
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,10 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.fragment_ideas.*
 import kotlinx.coroutines.*
 import ru.debaser.projects.tribune.*
@@ -32,6 +38,10 @@ open class IdeasFragment: Fragment(),
     private lateinit var currentState: State<IdeaModel>
     private lateinit var dialog: LoadingDialog
 
+    companion object {
+        private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,6 +53,7 @@ open class IdeasFragment: Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
+        requestToken()
         if (requireActivity().getIsUserReader()) {
             fab.setOnClickListener {
                 view.findNavController()
@@ -337,5 +348,32 @@ open class IdeasFragment: Fragment(),
     private fun isAlreadyVote(idea: IdeaModel): Boolean {
         val id = requireActivity().getUserId()
         return idea.likes.contains(id) || idea.dislikes.contains(id)
+    }
+
+    private fun requestToken() {
+        with(GoogleApiAvailability.getInstance()) {
+            val code = isGooglePlayServicesAvailable(requireActivity())
+            if (code == ConnectionResult.SUCCESS) {
+                onActivityResult(PLAY_SERVICES_RESOLUTION_REQUEST, Activity.RESULT_OK, null)
+            } else if (isUserResolvableError(code)) {
+                getErrorDialog(requireActivity(), code, PLAY_SERVICES_RESOLUTION_REQUEST).show()
+            } else {
+                toast(R.string.gp_unavailable)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            PLAY_SERVICES_RESOLUTION_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    launch {
+                        val token = FirebaseInstanceId.getInstance().instanceId.result?.token ?: return@launch
+                        Repository.registerPushToken(token)
+                    }
+                }
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 }

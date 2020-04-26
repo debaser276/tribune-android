@@ -70,4 +70,7 @@ object Repository {
     suspend fun getAfterByAuthor(id: Long, authorId: Long) = API.getAfterByAuthor(id, authorId)
 
     suspend fun getVotes(id: Long) = API.getVotes(id)
+
+    suspend fun registerPushToken(token: String) =
+        API.registerPushToken(PushRequestParams(token))
 }

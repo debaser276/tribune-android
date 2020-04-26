@@ -8,6 +8,8 @@ import ru.debaser.projects.tribune.model.VoteModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
+data class PushRequestParams(val token: String)
+
 data class Me(val id: Long,
               val token: String,
               val username: String,
@@ -61,4 +63,7 @@ interface API {
 
     @GET("api/v1/votes/{id}")
     suspend fun getVotes(@Path("id") id: Long): Response<List<VoteModel>>
+
+    @POST("api/v1/push")
+    suspend fun registerPushToken(@Body pushRequestParams: PushRequestParams): Response<Void>
 }
