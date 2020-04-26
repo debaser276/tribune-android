@@ -12,6 +12,7 @@ class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaVi
     var onLikeClickListener: OnLikeClickListener? = null
     var onDislikeClickListener: OnDislikeClickListener? = null
     var onVotesClickListener: OnVotesClickListener? = null
+    var onLinkClickListener: OnLinkClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdeaViewHolder =
         IdeaViewHolder(
@@ -39,5 +40,9 @@ class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaVi
 
     interface OnVotesClickListener {
         fun onVotesClickListener(idea: IdeaModel)
+    }
+
+    interface OnLinkClickListener {
+        fun onLinkClickListener(idea: IdeaModel)
     }
 }

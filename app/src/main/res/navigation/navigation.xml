@@ -44,7 +44,7 @@
         <action
             android:id="@+id/action_ideasFragment_to_authFragment"
             app:destination="@id/authFragment"
-            app:popUpTo="@+id/authFragment"
+            app:popUpTo="@id/ideasFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_ideasFragment_to_postIdeaFragment"

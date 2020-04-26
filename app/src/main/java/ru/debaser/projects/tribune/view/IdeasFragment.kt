@@ -3,11 +3,10 @@ package ru.debaser.projects.tribune.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
@@ -32,7 +31,8 @@ open class IdeasFragment: Fragment(),
     IdeaAdapter.OnAvatarClickListener,
     IdeaAdapter.OnLikeClickListener,
     IdeaAdapter.OnDislikeClickListener,
-    IdeaAdapter.OnVotesClickListener
+    IdeaAdapter.OnVotesClickListener,
+    IdeaAdapter.OnLinkClickListener
 {
 
     lateinit var ideaAdapter: IdeaAdapter
@@ -48,6 +48,7 @@ open class IdeasFragment: Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_ideas, container, false)
     }
 
@@ -55,7 +56,7 @@ open class IdeasFragment: Fragment(),
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
         requestToken()
-        if (requireActivity().getIsUserReader()) {
+        if (!requireActivity().getIsUserReader()) {
             fab.setOnClickListener {
                 view.findNavController()
                     .navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
@@ -106,6 +107,7 @@ open class IdeasFragment: Fragment(),
         }
         override fun release() {
             showLoadingDialog(false)
+            clearCredentials()
         }
     }
 
@@ -177,10 +179,6 @@ open class IdeasFragment: Fragment(),
                     }
                     result.code() == 401-> {
                         currentState.release()
-                        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
-                            clear()
-                            apply()
-                        }
                         view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                     }
                     else -> {
@@ -190,6 +188,13 @@ open class IdeasFragment: Fragment(),
             } catch(e: IOException) {
                 currentState.fail(e::class.simpleName ?: "")
             }
+        }
+    }
+
+    private fun clearCredentials() {
+        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
+            clear()
+            apply()
         }
     }
 
@@ -252,6 +257,7 @@ open class IdeasFragment: Fragment(),
                 onLikeClickListener = this@IdeasFragment
                 onDislikeClickListener = this@IdeasFragment
                 onVotesClickListener = this@IdeasFragment
+                onLinkClickListener = this@IdeasFragment
             }
             onScrolledToFooter { currentState.loadNew() }
             adapter = ideaAdapter
@@ -289,6 +295,22 @@ open class IdeasFragment: Fragment(),
             progressBar.visibility = View.GONE
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.logout -> {
+                clearCredentials()
+                view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     override fun onAvatarClickListener(ideaModel: IdeaModel) {
         view?.findNavController()?.navigate(
@@ -344,6 +366,10 @@ open class IdeasFragment: Fragment(),
 
     override fun onVotesClickListener(idea: IdeaModel) {
         view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
+    }
+
+    override fun onLinkClickListener(idea: IdeaModel) {
+        startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(idea.link)))
     }
 
     private fun isAlreadyVote(idea: IdeaModel): Boolean {
