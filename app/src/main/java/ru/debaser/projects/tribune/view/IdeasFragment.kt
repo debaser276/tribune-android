@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -367,9 +368,10 @@ open class IdeasFragment: Fragment(),
         when (requestCode) {
             PLAY_SERVICES_RESOLUTION_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    launch {
-                        val token = FirebaseInstanceId.getInstance().instanceId.result?.token ?: return@launch
-                        Repository.registerPushToken(token)
+                    FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+                        launch {
+                            Repository.registerPushToken(it.token)
+                        }
                     }
                 }
             }

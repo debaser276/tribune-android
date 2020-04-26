@@ -8,7 +8,7 @@ import ru.debaser.projects.tribune.model.VoteModel
 
 data class AuthRequestParams(val username: String, val password: String)
 
-data class PushRequestParams(val token: String)
+data class PushRequestParams(val pushToken: String)
 
 data class Me(val id: Long,
               val token: String,
