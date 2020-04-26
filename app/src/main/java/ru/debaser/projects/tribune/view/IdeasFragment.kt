@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
@@ -14,7 +13,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.fragment_ideas.*
 import kotlinx.coroutines.*
@@ -107,7 +105,7 @@ open class IdeasFragment: Fragment(),
         }
         override fun release() {
             showLoadingDialog(false)
-            clearCredentials()
+            clearCredentialsAndDeletePushToken()
         }
     }
 
@@ -191,10 +189,13 @@ open class IdeasFragment: Fragment(),
         }
     }
 
-    private fun clearCredentials() {
+    private fun clearCredentialsAndDeletePushToken() {
         requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
             clear()
             apply()
+        }
+        launch(Dispatchers.IO) {
+            FirebaseInstanceId.getInstance().deleteInstanceId()
         }
     }
 
@@ -304,7 +305,7 @@ open class IdeasFragment: Fragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.logout -> {
-                clearCredentials()
+                clearCredentialsAndDeletePushToken()
                 view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                 true
             }
@@ -380,12 +381,16 @@ open class IdeasFragment: Fragment(),
     private fun requestToken() {
         with(GoogleApiAvailability.getInstance()) {
             val code = isGooglePlayServicesAvailable(requireActivity())
-            if (code == ConnectionResult.SUCCESS) {
-                onActivityResult(PLAY_SERVICES_RESOLUTION_REQUEST, Activity.RESULT_OK, null)
-            } else if (isUserResolvableError(code)) {
-                getErrorDialog(requireActivity(), code, PLAY_SERVICES_RESOLUTION_REQUEST).show()
-            } else {
-                toast(R.string.gp_unavailable)
+            when {
+                code == ConnectionResult.SUCCESS -> {
+                    onActivityResult(PLAY_SERVICES_RESOLUTION_REQUEST, Activity.RESULT_OK, null)
+                }
+                isUserResolvableError(code) -> {
+                    getErrorDialog(requireActivity(), code, PLAY_SERVICES_RESOLUTION_REQUEST).show()
+                }
+                else -> {
+                    toast(R.string.gp_unavailable)
+                }
             }
         }
     }

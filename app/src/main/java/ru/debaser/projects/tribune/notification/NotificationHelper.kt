@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.os.Message
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.RemoteMessage
@@ -69,14 +68,13 @@ object NotificationHelper {
         context: Context,
         title: String,
         content: String
-    ): NotificationCompat.Builder {
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID_MAIN)
+    ): NotificationCompat.Builder =
+        NotificationCompat.Builder(context, CHANNEL_ID_MAIN)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        return builder
-    }
+
 
     private fun createNotificationChannelIfNotCreated(context: Context) {
         if (!channelCreated) {
