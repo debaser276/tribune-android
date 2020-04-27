@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
@@ -19,7 +20,6 @@ import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
 class VotesFragment : Fragment(),
-    CoroutineScope by MainScope(),
     VoteAdapter.OnAvatarClickListener
 {
 
@@ -39,7 +39,7 @@ class VotesFragment : Fragment(),
     }
 
     private fun getVotes() {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val dialog = LoadingDialog(
                 requireContext(),
                 R.string.getting_votes).apply { show() }

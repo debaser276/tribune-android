@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_postidea.*
@@ -26,7 +27,7 @@ import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
-class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
+class PostIdeaFragment : Fragment() {
 
     private var mediaUrl: String = ""
 
@@ -58,7 +59,7 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
             builder.show()
         }
         postIdeaBtn.setOnClickListener {
-            launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 if (mediaUrl.isNotEmpty() && contentEt.text.isNotEmpty()) {
                     val dialog = LoadingDialog(
                         requireActivity(),
@@ -86,11 +87,6 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cancel()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -125,7 +121,7 @@ class PostIdeaFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun uploadImage(bitmap: Bitmap) {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val dialog = LoadingDialog(
                 requireContext(),
                 R.string.image_uploading).apply { show() }

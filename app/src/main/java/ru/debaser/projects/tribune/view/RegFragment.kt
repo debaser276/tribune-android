@@ -15,6 +15,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_reg.*
@@ -33,7 +34,7 @@ import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.*
 import java.io.IOException
 
-class RegFragment : Fragment(), CoroutineScope by MainScope() {
+class RegFragment : Fragment() {
 
     private var avatarId: String = ""
 
@@ -63,7 +64,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
             } else if (!isValid(passwordEt.text.toString())) {
                 passwordTil.error = getString(R.string.password_incorrect)
             } else {
-                launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     val dialog = LoadingDialog(
                         requireActivity(),
                         R.string.registration).apply { show() }
@@ -89,11 +90,6 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cancel()
-    }
-
     private fun setUserAuth(response: Response<Me>) {
         requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
             putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
@@ -114,7 +110,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
         avatarRl.visibility = View.VISIBLE
         addAvatarBtn.visibility = View.VISIBLE
         addAvatarBtn.setOnClickListener {
-            launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 val dialog = LoadingDialog(
                     requireContext(),
                     R.string.set_avatar).apply { show() }
@@ -174,7 +170,7 @@ class RegFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun uploadImage(bitmap: Bitmap) {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val dialog = LoadingDialog(
                 requireContext(),
                 R.string.image_uploading).apply { show() }

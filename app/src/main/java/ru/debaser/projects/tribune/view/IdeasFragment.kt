@@ -9,6 +9,7 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
@@ -25,7 +26,6 @@ import ru.debaser.projects.tribune.utils.*
 import java.io.IOException
 
 open class IdeasFragment: Fragment(),
-    CoroutineScope by MainScope(),
     IdeaAdapter.OnAvatarClickListener,
     IdeaAdapter.OnLikeClickListener,
     IdeaAdapter.OnDislikeClickListener,
@@ -168,7 +168,7 @@ open class IdeasFragment: Fragment(),
     }
 
     private fun getRecent() {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val result = getRecentFromRepository()
                 when {
@@ -194,13 +194,13 @@ open class IdeasFragment: Fragment(),
             clear()
             apply()
         }
-        launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             FirebaseInstanceId.getInstance().deleteInstanceId()
         }
     }
 
     private fun getAfter() {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val response = getAfterFromRepository(ideaAdapter.list[0].id)
                 if (response.isSuccessful) {
@@ -221,7 +221,7 @@ open class IdeasFragment: Fragment(),
     }
 
     private fun getBefore() {
-        launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val response = getBeforeFromRepository(ideaAdapter.list[ideaAdapter.list.size - 1].id)
                 if (response.isSuccessful) {
@@ -323,7 +323,7 @@ open class IdeasFragment: Fragment(),
 
     override fun onLikeClickListener(idea: IdeaModel, position: Int) {
         if (!isAlreadyVote(idea)) {
-            launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 idea.likeActionPerforming = true
                 try {
                     ideaAdapter.notifyItemChanged(position)
@@ -345,7 +345,7 @@ open class IdeasFragment: Fragment(),
 
     override fun onDislikeClickListener(idea: IdeaModel, position: Int) {
         if (!isAlreadyVote(idea)) {
-            launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 idea.dislikeActionPerforming = true
                 try {
                     ideaAdapter.notifyItemChanged(position)
@@ -400,7 +400,7 @@ open class IdeasFragment: Fragment(),
             PLAY_SERVICES_RESOLUTION_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
                     FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-                        launch {
+                        viewLifecycleOwner.lifecycleScope.launch {
                             Repository.registerPushToken(it.token)
                         }
                     }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_auth.*
@@ -21,7 +22,7 @@ import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.*
 import java.io.IOException
 
-class AuthFragment : Fragment(), CoroutineScope by MainScope() {
+class AuthFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +46,7 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
             if (!isValid(passwordEt.text.toString())) {
                 passwordTil.error = getString(R.string.password_incorrect)
             } else {
-                launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     val dialog = LoadingDialog(
                         requireActivity(),
                         R.string.authentication).apply { show() }
@@ -81,7 +82,6 @@ class AuthFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onStop() {
         super.onStop()
         hideKeyboard()
-        cancel()
     }
 
     private fun isAuthenticated() =
