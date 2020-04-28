@@ -325,8 +325,8 @@ open class IdeasFragment: Fragment(),
         if (!isAlreadyVote(idea)) {
             viewLifecycleOwner.lifecycleScope.launch {
                 idea.likeActionPerforming = true
+                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
                 try {
-                    ideaAdapter.notifyItemChanged(position)
                     val response = Repository.like(idea.id)
                     if (response.isSuccessful) {
                         idea.updateLikes(response.body()!!)
@@ -335,7 +335,7 @@ open class IdeasFragment: Fragment(),
                     toast(R.string.error_occured)
                 } finally {
                     idea.likeActionPerforming = false
-                    ideaAdapter.notifyItemChanged(position)
+                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
                 }
             }
         } else {
@@ -348,7 +348,7 @@ open class IdeasFragment: Fragment(),
             viewLifecycleOwner.lifecycleScope.launch {
                 idea.dislikeActionPerforming = true
                 try {
-                    ideaAdapter.notifyItemChanged(position)
+                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
                     val response = Repository.dislike(idea.id)
                     if (response.isSuccessful) {
                         idea.updateDislikes(response.body()!!)
@@ -357,7 +357,7 @@ open class IdeasFragment: Fragment(),
                     toast(R.string.error_occured)
                 } finally {
                     idea.dislikeActionPerforming = false
-                    ideaAdapter.notifyItemChanged(position)
+                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
                 }
             }
         } else {

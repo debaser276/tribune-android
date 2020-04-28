@@ -72,6 +72,38 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
                 false -> promoterTv.visibility = View.GONE
             }
 
+            like(idea)
+
+            dislike(idea)
+        }
+    }
+
+    fun dislike(idea: IdeaModel) {
+        with (itemView) {
+            val dislikesCount = idea.dislikes.size
+            when {
+                dislikesCount <= 0 -> dislikesTv.visibility = View.INVISIBLE
+                dislikesCount in 1..999 -> {
+                    if (dislikesTv.visibility == View.INVISIBLE) dislikesTv.visibility =
+                        View.VISIBLE
+                    dislikesTv.text = dislikesCount.toString()
+                }
+            }
+            when {
+                idea.dislikeActionPerforming -> {
+                    dislikesTv.setTextColor(Color.BLUE)
+                    dislikeIv.setColorFilter(Color.BLUE)
+                }
+                idea.dislikes.contains(context.getUserId()) -> {
+                    dislikesTv.setTextColor(Color.RED)
+                    dislikeIv.setColorFilter(Color.RED)
+                }
+            }
+        }
+    }
+
+    fun like(idea: IdeaModel) {
+        with (itemView) {
             val likesCount = idea.likes.size
             when {
                 likesCount <= 0 -> likesTv.visibility = View.INVISIBLE
@@ -88,25 +120,6 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
                 idea.likes.contains(context.getUserId()) -> {
                     likesTv.setTextColor(Color.GREEN)
                     likeIv.setColorFilter(Color.GREEN)
-                }
-            }
-
-            val dislikesCount = idea.dislikes.size
-            when {
-                dislikesCount <= 0 -> dislikesTv.visibility = View.INVISIBLE
-                dislikesCount in 1..999 -> {
-                    if (dislikesTv.visibility == View.INVISIBLE) dislikesTv.visibility = View.VISIBLE
-                    dislikesTv.text = dislikesCount.toString()
-                }
-            }
-            when {
-                idea.dislikeActionPerforming -> {
-                    dislikesTv.setTextColor(Color.BLUE)
-                    dislikeIv.setColorFilter(Color.BLUE)
-                }
-                idea.dislikes.contains(context.getUserId()) -> {
-                    dislikesTv.setTextColor(Color.RED)
-                    dislikeIv.setColorFilter(Color.RED)
                 }
             }
         }

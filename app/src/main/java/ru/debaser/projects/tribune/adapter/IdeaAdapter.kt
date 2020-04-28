@@ -14,6 +14,11 @@ class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaVi
     var onVotesClickListener: OnVotesClickListener? = null
     var onLinkClickListener: OnLinkClickListener? = null
 
+    companion object {
+        const val PAYLOAD_LIKE = "payload_like"
+        const val PAYLOAD_DISLIKE = "payload_dislike"
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdeaViewHolder =
         IdeaViewHolder(
             this,
@@ -24,6 +29,23 @@ class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaVi
 
     override fun onBindViewHolder(holder: IdeaViewHolder, position: Int) {
         holder.bind(list[position])
+    }
+
+    override fun onBindViewHolder(
+        holder: IdeaViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNotEmpty()) {
+            for (payload in payloads) {
+                when (payload) {
+                    PAYLOAD_LIKE -> holder.like(list[position])
+                    PAYLOAD_DISLIKE -> holder.dislike(list[position])
+                }
+            }
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
     }
 
     interface OnAvatarClickListener {
