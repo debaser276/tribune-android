@@ -21,6 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/dateTv"
         app:layout_constraintStart_toEndOf="@id/avatarIv"
         app:layout_constraintTop_toTopOf="@id/avatarIv"

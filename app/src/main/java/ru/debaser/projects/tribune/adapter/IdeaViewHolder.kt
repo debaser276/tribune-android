@@ -1,6 +1,7 @@
 package ru.debaser.projects.tribune.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -57,7 +58,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
         with (itemView) {
             if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
             authorTv.text = idea.author
-            dateTv.text = SimpleDateFormat("dd MMMM").format(Date(idea.created))
+            dateTv.text = SimpleDateFormat("dd MMM hh:mm").format(Date(idea.created * 1000L))
             if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
             contentTv.text = idea.content
             loadImages(imageIv, idea.media)
