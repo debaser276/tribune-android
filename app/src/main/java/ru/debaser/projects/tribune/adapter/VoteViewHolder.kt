@@ -47,7 +47,7 @@ class VoteViewHolder(adapter: VoteAdapter, view: View): RecyclerView.ViewHolder(
                 false -> promoterTv.visibility = View.GONE
             }
             authorTv.text = vote.author
-            createdTv.text = SimpleDateFormat("dd MMMM").format(Date(vote.created))
+            createdTv.text = SimpleDateFormat("dd MMMM hh:mm").format(Date(vote.created * 1000))
         }
     }
 
