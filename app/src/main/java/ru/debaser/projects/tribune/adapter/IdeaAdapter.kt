@@ -6,13 +6,19 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 
-class IdeaAdapter(var list: MutableList<IdeaModel>): RecyclerView.Adapter<IdeaViewHolder>() {
+class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
 
     var onAvatarClickListener: OnAvatarClickListener? = null
     var onLikeClickListener: OnLikeClickListener? = null
     var onDislikeClickListener: OnDislikeClickListener? = null
     var onVotesClickListener: OnVotesClickListener? = null
     var onLinkClickListener: OnLinkClickListener? = null
+
+    var list = mutableListOf<IdeaModel>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     companion object {
         const val PAYLOAD_LIKE = "payload_like"

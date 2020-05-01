@@ -6,6 +6,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import java.util.regex.Pattern
 
 private val pattern  by lazy (LazyThreadSafetyMode.NONE) {
@@ -40,4 +41,7 @@ fun Context.getIsUserReader(): Boolean= this.getSharedPreferences(API_SHARED_FIL
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+}
+fun <T> MutableLiveData<T>.notifyObserver() {
+    this.value = this.value
 }

@@ -9,33 +9,31 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.fragment_ideas.*
-import kotlinx.coroutines.*
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.adapter.onScrolledToFooter
 import ru.debaser.projects.tribune.model.IdeaModel
-import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.*
-import java.io.IOException
+import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
+import ru.debaser.projects.tribune.viewmodel.IdeasViewModelFactory
 
-open class IdeasFragment: Fragment(),
+class IdeasFragment : Fragment(),
     IdeaAdapter.OnAvatarClickListener,
     IdeaAdapter.OnLikeClickListener,
     IdeaAdapter.OnDislikeClickListener,
     IdeaAdapter.OnVotesClickListener,
     IdeaAdapter.OnLinkClickListener
 {
-
-    lateinit var ideaAdapter: IdeaAdapter
-    private lateinit var currentState: State<IdeaModel>
     private lateinit var dialog: LoadingDialog
+    private lateinit var ideasViewModel: IdeasViewModel
+    private lateinit var ideaAdapter: IdeaAdapter
 
     companion object {
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
@@ -46,254 +44,78 @@ open class IdeasFragment: Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        ideaAdapter = IdeaAdapter()
+        ideasViewModel = ViewModelProvider(this,
+            IdeasViewModelFactory(
+                ideaAdapter
+            )
+        ).get(IdeasViewModel::class.java)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_ideas, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
         requestToken()
-        if (!requireActivity().getIsUserReader()) {
-            fab.setOnClickListener {
-                view.findNavController()
-                    .navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
-            }
-        }
-        swipeContainer.setOnRefreshListener {
-            currentState.refresh()
-        }
-    }
 
-    override fun onStart() {
-        super.onStart()
-        currentState = Empty()
-        currentState.refresh()
-    }
-
-    private interface State<T> {
-        fun refresh() {}
-        fun fail(err: String) {}
-        fun newData(list: List<T>) {}
-        fun release() {}
-        fun loadNew() {}
-    }
-
-    private inner class Empty:
-        State<IdeaModel> {
-        override fun refresh() {
-            currentState = EmptyProgress()
-            showLoadingDialog(true)
-            getRecent()
-        }
-    }
-
-    private inner class EmptyProgress: State<IdeaModel> {
-        override fun fail(err: String) {
-            currentState = EmptyError()
-            showLoadingDialog(false)
-            showEmptyError(err)
-        }
-        override fun newData(list: List<IdeaModel>) {
-            showLoadingDialog(false)
-            if (list.isEmpty()) {
-                toast(R.string.no_idea)
-            } else {
-                currentState = Data()
-                setAdapter(list)
-            }
-        }
-        override fun release() {
-            showLoadingDialog(false)
-            clearCredentialsAndDeletePushToken()
-        }
-    }
-
-    private inner class EmptyError: State<IdeaModel> {
-        override fun refresh() {
-            currentState = EmptyProgress()
-            showLoadingDialog(true)
-            getRecent()
-        }
-    }
-
-    private inner class Data: State<IdeaModel> {
-        override fun refresh() {
-            currentState = Refresh()
-            getAfter()
-        }
-        override fun loadNew() {
-            currentState = AddProgress()
-            showProgressBar(true)
-            getBefore()
-        }
-    }
-
-    private inner class Refresh: State<IdeaModel> {
-        override fun newData(list: List<IdeaModel>) {
-            currentState = Data()
-            ideaAdapter.list.addAll(list)
-        }
-        override fun fail(err: String) {
-            currentState = Data()
-            showLoadingDialog(false)
-            showErrorToast(err)
-        }
-    }
-
-    private inner class AddProgress: State<IdeaModel> {
-        override fun newData(list: List<IdeaModel>) {
-            if (list.isEmpty()) {
-                currentState = AllData()
-                toast(R.string.loaded_all_ideas)
-                showProgressBar(false)
-            } else {
-                currentState = Data()
-                showProgressBar(false)
-                ideaAdapter.list.addAll(list)
-            }
-        }
-        override fun fail(err: String) {
-            currentState = Data()
-            showProgressBar(false)
-            showErrorToast(err)
-        }
-    }
-
-    private inner class AllData: State<IdeaModel> {
-        override fun refresh() {
-            currentState = Refresh()
-            getAfter()
-        }
-    }
-
-    private fun getRecent() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val result = getRecentFromRepository()
-                when {
-                    result.isSuccessful -> {
-                        currentState.newData(result.body() ?: listOf())
-                    }
-                    result.code() == 401-> {
-                        currentState.release()
-                        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
-                    }
-                    else -> {
-                        currentState.fail(result.code().toString())
-                    }
-                }
-            } catch(e: IOException) {
-                currentState.fail(e::class.simpleName ?: "")
-            }
-        }
-    }
-
-    private fun clearCredentialsAndDeletePushToken() {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
-            clear()
-            apply()
-        }
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            FirebaseInstanceId.getInstance().deleteInstanceId()
-        }
-    }
-
-    private fun getAfter() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val response = getAfterFromRepository(ideaAdapter.list[0].id)
-                if (response.isSuccessful) {
-                    val newIdeas = response.body()!!
-                    currentState.newData(newIdeas)
-                    ideaAdapter.notifyItemRangeInserted(0, newIdeas.size)
-                } else {
-                    currentState.fail(response.code().toString())
-                }
-            } catch (e: IOException) {
-                currentState.fail(e::class.simpleName ?: "")
-            } catch (e: IndexOutOfBoundsException) {
-                currentState.fail(e::class.simpleName ?: "")
-            } finally {
-                swipeContainer.isRefreshing = false
-            }
-        }
-    }
-
-    private fun getBefore() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val response = getBeforeFromRepository(ideaAdapter.list[ideaAdapter.list.size - 1].id)
-                if (response.isSuccessful) {
-                    val newIdeas = response.body()!!
-                    currentState.newData(newIdeas)
-                    ideaAdapter.notifyItemRangeInserted(ideaAdapter.list.size, newIdeas.size)
-                } else {
-                    currentState.fail(response.code().toString())
-                }
-            } catch (e: IOException) {
-                currentState.fail(e::class.simpleName ?: "")
-            }
-        }
-    }
-
-    open suspend fun getRecentFromRepository() = withContext(Dispatchers.IO) {
-        Repository.getRecent()
-    }
-
-    open suspend fun getAfterFromRepository(id: Long) = withContext(Dispatchers.IO) {
-        Repository.getAfter(id)
-    }
-
-    open suspend fun getBeforeFromRepository(id: Long) = withContext(Dispatchers.IO) {
-        Repository.getBefore(id)
-    }
-
-
-    open fun setAdapter(list: List<IdeaModel>) {
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
-            ideaAdapter = IdeaAdapter(list.toMutableList()).apply {
+            adapter = ideaAdapter.apply {
                 onAvatarClickListener = this@IdeasFragment
                 onLikeClickListener = this@IdeasFragment
                 onDislikeClickListener = this@IdeasFragment
                 onVotesClickListener = this@IdeasFragment
                 onLinkClickListener = this@IdeasFragment
             }
-            onScrolledToFooter { currentState.loadNew() }
-            adapter = ideaAdapter
+            onScrolledToFooter { ideasViewModel.loadNew() }
         }
-    }
 
-    private fun showEmptyError(error: String?) {
-        errorRv.visibility = View.VISIBLE
-        errorTv.text = "${getString(R.string.error_occured)}: $error"
-        errorBtn.setOnClickListener {
-            currentState.refresh()
-            errorRv.visibility = View.GONE
+        if (!requireActivity().getIsUserReader()) {
+            fab.setOnClickListener {
+                view.findNavController()
+                    .navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
+            }
         }
-    }
 
-    private fun showErrorToast(err: String) {
-        toast("${getString(R.string.error_occured)}: $err")
-    }
-
-    private fun showLoadingDialog(show: Boolean) {
-        if (show) {
-            dialog = LoadingDialog(
-                requireActivity(),
-                R.string.getting_ideas
-            ).apply { show() }
-        } else {
-            dialog.dismiss()
+        swipeContainer.setOnRefreshListener {
+            ideasViewModel.refresh()
         }
-    }
 
-    private fun showProgressBar(show: Boolean) {
-        if (show) {
-            progressBar.visibility = View.VISIBLE
-        } else {
-            progressBar.visibility = View.GONE
+        with (ideasViewModel) {
+            showLoadingDialogEvent.observe(viewLifecycleOwner, Observer {
+                showLoadingDialog(it)
+            })
+            noAuthEvent.observe(viewLifecycleOwner, Observer {
+                if (it) {
+                    clearCredentialsAndDeletePushToken()
+                    ideasViewModel.noAuthEventDone()
+                }
+            })
+            showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {
+                if (it) showEmptyError()
+            })
+            showNoIdeasYetEvent.observe(viewLifecycleOwner, Observer {
+                if (it) toast(R.string.no_idea)
+                showNoIdeasYetEventDone()
+            })
+            cancelRefreshingEvent.observe(viewLifecycleOwner, Observer {
+                if (it) {
+                    swipeContainer.isRefreshing = !it
+                    cancelRefreshingEventDone()
+                }
+            })
+            showToastEvent.observe(viewLifecycleOwner, Observer {
+                toast(it)
+            })
+            showProgressBarEvent.observe(viewLifecycleOwner, Observer {
+                showProgressBar(it)
+            })
+            ideas.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    ideaAdapter.list = it
+                }
+            })
         }
     }
 
@@ -312,70 +134,40 @@ open class IdeasFragment: Fragment(),
             else -> super.onOptionsItemSelected(item)
         }
 
-
-    override fun onAvatarClickListener(ideaModel: IdeaModel) {
-        view?.findNavController()?.navigate(
-            IdeasFragmentDirections.actionIdeasFragmentToIdeasByAuthorFragment(
-                ideaModel.authorId
-            )
-        )
+    private fun clearCredentialsAndDeletePushToken() {
+        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
+            clear()
+            apply()
+        }
+        ideasViewModel.deleteToken()
     }
 
-    override fun onLikeClickListener(idea: IdeaModel, position: Int) {
-        if (!isAlreadyVote(idea)) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                idea.likeActionPerforming = true
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
-                try {
-                    val response = Repository.like(idea.id)
-                    if (response.isSuccessful) {
-                        idea.updateLikes(response.body()!!)
-                    }
-                } catch (e: IOException) {
-                    toast(R.string.error_occured)
-                } finally {
-                    idea.likeActionPerforming = false
-                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
-                }
-            }
+    private fun showLoadingDialog(show: Boolean) {
+        if (show) {
+            dialog = LoadingDialog(
+                requireActivity(),
+                R.string.getting_ideas
+            ).apply { show() }
         } else {
-            toast(R.string.vote_once)
+            dialog.dismiss()
         }
     }
 
-    override fun onDislikeClickListener(idea: IdeaModel, position: Int) {
-        if (!isAlreadyVote(idea)) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                idea.dislikeActionPerforming = true
-                try {
-                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
-                    val response = Repository.dislike(idea.id)
-                    if (response.isSuccessful) {
-                        idea.updateDislikes(response.body()!!)
-                    }
-                } catch (e: IOException) {
-                    toast(R.string.error_occured)
-                } finally {
-                    idea.dislikeActionPerforming = false
-                    ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
-                }
-            }
-        } else {
-            toast(R.string.vote_once)
+    private fun showEmptyError() {
+        errorRv.visibility = View.VISIBLE
+        errorTv.setText(R.string.error_occured)
+        errorBtn.setOnClickListener {
+            ideasViewModel.refresh()
+            errorRv.visibility = View.GONE
         }
     }
 
-    override fun onVotesClickListener(idea: IdeaModel) {
-        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
-    }
-
-    override fun onLinkClickListener(idea: IdeaModel) {
-        startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(idea.link)))
-    }
-
-    private fun isAlreadyVote(idea: IdeaModel): Boolean {
-        val id = requireActivity().getUserId()
-        return idea.likes.contains(id) || idea.dislikes.contains(id)
+    private fun showProgressBar(show: Boolean) {
+        if (show) {
+            progressBar.visibility = View.VISIBLE
+        } else {
+            progressBar.visibility = View.GONE
+        }
     }
 
     private fun requestToken() {
@@ -399,14 +191,47 @@ open class IdeasFragment: Fragment(),
         when (requestCode) {
             PLAY_SERVICES_RESOLUTION_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            Repository.registerPushToken(it.token)
-                        }
-                    }
+                    ideasViewModel.regPushToken()
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onAvatarClickListener(ideaModel: IdeaModel) {
+        view?.findNavController()?.navigate(
+            IdeasFragmentDirections.actionIdeasFragmentToIdeasByAuthorFragment(
+                ideaModel.authorId
+            )
+        )
+    }
+
+    override fun onLikeClickListener(idea: IdeaModel, position: Int) {
+        if (!isAlreadyVote(idea)) {
+            ideasViewModel.likeClick(idea, position)
+        } else {
+            toast(R.string.vote_once)
+        }
+    }
+
+    private fun isAlreadyVote(idea: IdeaModel): Boolean {
+        val id = requireActivity().getUserId()
+        return idea.likes.contains(id) || idea.dislikes.contains(id)
+    }
+
+    override fun onDislikeClickListener(idea: IdeaModel, position: Int) {
+        if (!isAlreadyVote(idea)) {
+            ideasViewModel.dislikeClick(idea, position)
+        } else {
+            toast(R.string.vote_once)
+        }
+    }
+
+    override fun onVotesClickListener(idea: IdeaModel) {
+        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
+    }
+
+    override fun onLinkClickListener(idea: IdeaModel) {
+        startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(idea.link)))
     }
 }
