@@ -25,6 +25,7 @@ import ru.debaser.projects.tribune.utils.API_SHARED_FILE
 import ru.debaser.projects.tribune.utils.getIsUserReader
 import ru.debaser.projects.tribune.utils.getUserId
 import ru.debaser.projects.tribune.utils.toast
+import ru.debaser.projects.tribune.view.IdeasFragmentDirections.actionIdeasFragmentToVotesFragment
 import ru.debaser.projects.tribune.viewmodel.IdeasByAuthorViewModel
 import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
 
@@ -78,12 +79,6 @@ class IdeasByAuthorFragment : Fragment(),
                 if (it) {
                     clearCredentialsAndDeletePushToken()
                     ideasViewModel.noAuthEventDone()
-                }
-            })
-            noIdeaEvent.observe(viewLifecycleOwner, Observer {
-                if (it) {
-                    noIdeaEventDone()
-                    view.findNavController().navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToIdeasFragment())
                 }
             })
             showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {
@@ -178,7 +173,7 @@ class IdeasByAuthorFragment : Fragment(),
     }
 
     override fun onVotesClickListener(idea: IdeaModel) {
-        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
+        view?.findNavController()?.navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToVotesFragment(idea.id))
     }
 
     override fun onLinkClickListener(idea: IdeaModel) {

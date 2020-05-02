@@ -45,10 +45,6 @@ class IdeasByAuthorViewModel(
     val showToastEvent: LiveData<Int>
         get() = _showToastEvent
 
-    private val _noIdeaEvent = MutableLiveData<Boolean>()
-    val noIdeaEvent: LiveData<Boolean>
-        get() = _noIdeaEvent
-
     private val _showProgressBarEvent = MutableLiveData<Boolean>()
     val showProgressBarEvent: LiveData<Boolean>
         get() = _showProgressBarEvent
@@ -84,13 +80,8 @@ class IdeasByAuthorViewModel(
         }
         override fun newData(list: List<IdeaModel>) {
             _showLoadingDialogEvent.value = false
-            if (list.isEmpty()) {
-                _showToastEvent.value = R.string.user_no_ideas
-                _noIdeaEvent.value = true
-            } else {
-                currentState = Data()
-                _ideas.value = list.toMutableList()
-            }
+            currentState = Data()
+            _ideas.value = list.toMutableList()
         }
         override fun release() {
             _showLoadingDialogEvent.value = false
@@ -264,9 +255,5 @@ class IdeasByAuthorViewModel(
 
     fun loadNew() {
         currentState.loadNew()
-    }
-
-    fun noIdeaEventDone() {
-        _noIdeaEvent.value = false
     }
 }
