@@ -14,6 +14,7 @@ import java.io.IOException
 class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
 
     private var currentState: State<IdeaModel>
+    var authorId: Long? = null
 
     private val _ideas = MutableLiveData<MutableList<IdeaModel>>()
     val ideas: LiveData<MutableList<IdeaModel>>
@@ -30,10 +31,6 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private val _showEmptyErrorEvent = MutableLiveData<Boolean>()
     val showEmptyErrorEvent: LiveData<Boolean>
         get() = _showEmptyErrorEvent
-
-    private val _showNoIdeasYetEvent = MutableLiveData<Boolean>()
-    val showNoIdeasYetEvent: LiveData<Boolean>
-        get() = _showNoIdeasYetEvent
 
     private val _cancelRefreshingEvent = MutableLiveData<Boolean>()
     val cancelRefreshingEvent: LiveData<Boolean>
@@ -58,6 +55,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         fun newData(list: List<T>) {}
         fun release() {}
         fun loadNew() {}
+        fun reset() {}
     }
 
     private inner class Empty:
@@ -79,7 +77,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         override fun newData(list: List<IdeaModel>) {
             _showLoadingDialogEvent.value = false
             if (list.isEmpty()) {
-                _showNoIdeasYetEvent.value = true
+                _showToastEvent.value = R.string.no_idea
             } else {
                 currentState = Data()
                 _ideas.value = list.toMutableList()
@@ -110,6 +108,12 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
             currentState = AddProgress()
             _showProgressBarEvent.value = true
             getBefore()
+        }
+
+        override fun reset() {
+            currentState = Empty()
+            _ideas.value?.clear()
+            currentState.refresh()
         }
     }
 
@@ -163,7 +167,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getRecent() {
         viewModelScope.launch {
             try {
-                val result = Repository.getRecent()
+                val result = Repository.getRecent(authorId)
                 when {
                     result.isSuccessful -> currentState.newData(result.body() ?: listOf())
                     result.code() == 401-> currentState.release()
@@ -261,10 +265,6 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         _noAuthEvent.value = false
     }
 
-    fun showNoIdeasYetEventDone() {
-        _showNoIdeasYetEvent.value = false
-    }
-
     fun cancelRefreshingEventDone() {
         _cancelRefreshingEvent.value = false
     }
@@ -275,5 +275,9 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
 
     fun loadNew() {
         currentState.loadNew()
+    }
+
+    fun reset() {
+        currentState.reset()
     }
 }

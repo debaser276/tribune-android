@@ -43,7 +43,11 @@ object Repository {
     suspend fun register(username: String, password: String) =
         API.register(AuthRequestParams(username, password))
 
-    suspend fun getRecent() = API.getRecent()
+    suspend fun getRecent(authorId: Long?) =
+        if (authorId == null)
+            API.getRecent()
+        else
+            API.getRecentByAuthor(authorId)
 
     suspend fun postIdea(postIdeaRequest: PostIdeaRequest) = API.postIdea(postIdeaRequest)
 
@@ -54,8 +58,6 @@ object Repository {
         val body = MultipartBody.Part.createFormData("file", "image.jpg", reqFile)
         return API.uploadImage(body)
     }
-
-    suspend fun getRecentByAuthor(authorId: Long) = API.getRecentByAuthor(authorId)
 
     suspend fun addAvatar(id: String) = API.addAvatar(Image(id = id))
 

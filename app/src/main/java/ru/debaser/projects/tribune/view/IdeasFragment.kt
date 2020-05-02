@@ -10,19 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.android.synthetic.main.fragment_ideas.*
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.adapter.onScrolledToFooter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.utils.*
 import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
-import ru.debaser.projects.tribune.viewmodel.IdeasViewModelFactory
 
 class IdeasFragment : Fragment(),
     IdeaAdapter.OnAvatarClickListener,
@@ -31,9 +31,10 @@ class IdeasFragment : Fragment(),
     IdeaAdapter.OnVotesClickListener,
     IdeaAdapter.OnLinkClickListener
 {
-    private lateinit var dialog: LoadingDialog
-    private lateinit var ideasViewModel: IdeasViewModel
-    private lateinit var ideaAdapter: IdeaAdapter
+    private val ideasViewModel: IdeasViewModel by viewModel {
+        parametersOf(ideaAdapter)
+    }
+    private val ideaAdapter: IdeaAdapter = IdeaAdapter()
 
     companion object {
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
@@ -44,12 +45,6 @@ class IdeasFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        ideaAdapter = IdeaAdapter()
-        ideasViewModel = ViewModelProvider(this,
-            IdeasViewModelFactory(
-                ideaAdapter
-            )
-        ).get(IdeasViewModel::class.java)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_ideas, container, false)
     }
@@ -58,6 +53,11 @@ class IdeasFragment : Fragment(),
 
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
         requestToken()
+
+        val dialog = LoadingDialog(
+            requireActivity(),
+            R.string.getting_ideas
+        )
 
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -84,7 +84,7 @@ class IdeasFragment : Fragment(),
 
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner, Observer {
-                showLoadingDialog(it)
+                showLoadingDialog(dialog, it)
             })
             noAuthEvent.observe(viewLifecycleOwner, Observer {
                 if (it) {
@@ -94,10 +94,6 @@ class IdeasFragment : Fragment(),
             })
             showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {
                 if (it) showEmptyError()
-            })
-            showNoIdeasYetEvent.observe(viewLifecycleOwner, Observer {
-                if (it) toast(R.string.no_idea)
-                showNoIdeasYetEventDone()
             })
             cancelRefreshingEvent.observe(viewLifecycleOwner, Observer {
                 if (it) {
@@ -142,12 +138,9 @@ class IdeasFragment : Fragment(),
         ideasViewModel.deleteToken()
     }
 
-    private fun showLoadingDialog(show: Boolean) {
+    private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
         if (show) {
-            dialog = LoadingDialog(
-                requireActivity(),
-                R.string.getting_ideas
-            ).apply { show() }
+            dialog.show()
         } else {
             dialog.dismiss()
         }
