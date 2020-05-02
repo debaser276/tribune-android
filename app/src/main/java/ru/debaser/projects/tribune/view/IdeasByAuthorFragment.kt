@@ -56,6 +56,8 @@ class IdeasByAuthorFragment : Fragment(),
             R.string.getting_ideas
         )
 
+        fab.hide()
+
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = ideaAdapter.apply {

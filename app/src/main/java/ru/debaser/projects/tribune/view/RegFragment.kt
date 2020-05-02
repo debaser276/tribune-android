@@ -57,6 +57,7 @@ class RegFragment : Fragment() {
             view.findNavController().navigate(RegFragmentDirections.actionRegFragmentToAuthFragment())
         }
         regBtn.setOnClickListener {
+            hideKeyboard()
             val password = passwordEt.text.toString()
             val passwordRepeated = passwordConfirmEt.text.toString()
             if (password != passwordRepeated) {

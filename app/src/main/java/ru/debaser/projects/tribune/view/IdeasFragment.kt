@@ -40,6 +40,11 @@ class IdeasFragment : Fragment(),
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestToken()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,7 +57,6 @@ class IdeasFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
-        requestToken()
 
         val dialog = LoadingDialog(
             requireActivity(),
