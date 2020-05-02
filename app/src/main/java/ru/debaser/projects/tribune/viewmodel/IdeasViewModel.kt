@@ -1,5 +1,6 @@
 package ru.debaser.projects.tribune.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     val cancelRefreshingEvent: LiveData<Boolean>
         get() = _cancelRefreshingEvent
 
-    private val _showToastEvent = MutableLiveData<Int>()
+    private val _showToastEvent = SingleLiveEvent<Int>()
     val showToastEvent: LiveData<Int>
         get() = _showToastEvent
 
@@ -53,7 +54,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         fun fail() {}
         fun newData(list: List<T>) {}
         fun release() {}
-        fun loadNew() {}
+        fun loadMore() {}
     }
 
     private inner class Empty:
@@ -102,7 +103,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
             currentState = Refresh()
             getAfter()
         }
-        override fun loadNew() {
+        override fun loadMore() {
             currentState = AddProgress()
             _showProgressBarEvent.value = true
             getBefore()
@@ -114,9 +115,11 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         override fun newData(list: List<IdeaModel>) {
             currentState = Data()
             _cancelRefreshingEvent.value = true
-            with (_ideas) {
-                value?.addAll(0, list)
-                notifyObserver()
+            if (list.isNotEmpty()) {
+                with(_ideas) {
+                    value?.addAll(0, list)
+                    notifyObserver()
+                }
             }
         }
         override fun fail() {
@@ -265,7 +268,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         currentState.refresh()
     }
 
-    fun loadNew() {
-        currentState.loadNew()
+    fun loadMore() {
+        currentState.loadMore()
     }
 }

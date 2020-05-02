@@ -72,7 +72,7 @@ class IdeasFragment : Fragment(),
                 onVotesClickListener = this@IdeasFragment
                 onLinkClickListener = this@IdeasFragment
             }
-            onScrolledToFooter { ideasViewModel.loadNew() }
+            onScrolledToFooter { ideasViewModel.loadMore() }
         }
 
         if (!requireActivity().getIsUserReader()) {
