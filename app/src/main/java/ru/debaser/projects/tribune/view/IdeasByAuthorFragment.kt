@@ -13,6 +13,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import retrofit2.Response
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
@@ -23,6 +25,7 @@ import ru.debaser.projects.tribune.utils.API_SHARED_FILE
 import ru.debaser.projects.tribune.utils.getIsUserReader
 import ru.debaser.projects.tribune.utils.getUserId
 import ru.debaser.projects.tribune.utils.toast
+import ru.debaser.projects.tribune.viewmodel.IdeasByAuthorViewModel
 import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
 
 class IdeasByAuthorFragment : Fragment(),
@@ -31,7 +34,9 @@ class IdeasByAuthorFragment : Fragment(),
     IdeaAdapter.OnVotesClickListener,
     IdeaAdapter.OnLinkClickListener
 {
-    private val ideasViewModel by sharedViewModel<IdeasViewModel>()
+    private val ideasViewModel: IdeasByAuthorViewModel by viewModel {
+        parametersOf(ideaAdapter, IdeasByAuthorFragmentArgs.fromBundle(arguments!!).authorId)
+    }
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
 
     override fun onCreateView(
@@ -49,9 +54,6 @@ class IdeasByAuthorFragment : Fragment(),
             requireActivity(),
             R.string.getting_ideas
         )
-
-        ideasViewModel.authorId = IdeasByAuthorFragmentArgs.fromBundle(arguments!!).authorId
-        ideasViewModel.reset()
 
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -76,6 +78,12 @@ class IdeasByAuthorFragment : Fragment(),
                 if (it) {
                     clearCredentialsAndDeletePushToken()
                     ideasViewModel.noAuthEventDone()
+                }
+            })
+            noIdeaEvent.observe(viewLifecycleOwner, Observer {
+                if (it) {
+                    noIdeaEventDone()
+                    view.findNavController().navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToIdeasFragment())
                 }
             })
             showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {
@@ -121,7 +129,6 @@ class IdeasByAuthorFragment : Fragment(),
             clear()
             apply()
         }
-        ideasViewModel.deleteToken()
     }
 
     private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {

@@ -1,6 +1,9 @@
 package ru.debaser.projects.tribune.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,7 +14,10 @@ import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.notifyObserver
 import java.io.IOException
 
-class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
+class IdeasByAuthorViewModel(
+    private val ideaAdapter: IdeaAdapter,
+    private val authorId: Long
+) : ViewModel() {
 
     private var currentState: State<IdeaModel>
 
@@ -38,6 +44,10 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private val _showToastEvent = MutableLiveData<Int>()
     val showToastEvent: LiveData<Int>
         get() = _showToastEvent
+
+    private val _noIdeaEvent = MutableLiveData<Boolean>()
+    val noIdeaEvent: LiveData<Boolean>
+        get() = _noIdeaEvent
 
     private val _showProgressBarEvent = MutableLiveData<Boolean>()
     val showProgressBarEvent: LiveData<Boolean>
@@ -75,7 +85,8 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         override fun newData(list: List<IdeaModel>) {
             _showLoadingDialogEvent.value = false
             if (list.isEmpty()) {
-                _showToastEvent.value = R.string.no_idea
+                _showToastEvent.value = R.string.user_no_ideas
+                _noIdeaEvent.value = true
             } else {
                 currentState = Data()
                 _ideas.value = list.toMutableList()
@@ -97,7 +108,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     }
 
     private inner class Data:
-    State<IdeaModel> {
+        State<IdeaModel> {
         override fun refresh() {
             currentState = Refresh()
             getAfter()
@@ -159,7 +170,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getRecent() {
         viewModelScope.launch {
             try {
-                val result = Repository.getRecent()
+                val result = Repository.getRecentByAuthor(authorId)
                 when {
                     result.isSuccessful -> currentState.newData(result.body() ?: listOf())
                     result.code() == 401-> currentState.release()
@@ -174,7 +185,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfter(ideaAdapter.list[0].id)
+                val response = Repository.getAfterByAuthor(authorId, ideaAdapter.list[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -190,7 +201,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBefore(ideaAdapter.list[ideaAdapter.list.size - 1].id)
+                val response = Repository.getBeforeByAuthor(authorId, ideaAdapter.list[ideaAdapter.list.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -239,20 +250,6 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         }
     }
 
-    fun regPushToken() {
-        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-            viewModelScope.launch {
-                Repository.registerPushToken(it.token)
-            }
-        }
-    }
-
-    fun deleteToken() {
-        viewModelScope.launch(Dispatchers.IO) {
-            FirebaseInstanceId.getInstance().deleteInstanceId()
-        }
-    }
-
     fun noAuthEventDone() {
         _noAuthEvent.value = false
     }
@@ -267,5 +264,9 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
 
     fun loadNew() {
         currentState.loadNew()
+    }
+
+    fun noIdeaEventDone() {
+        _noIdeaEvent.value = false
     }
 }

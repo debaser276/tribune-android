@@ -90,6 +90,7 @@ class IdeasFragment : Fragment(),
                 if (it) {
                     clearCredentialsAndDeletePushToken()
                     ideasViewModel.noAuthEventDone()
+                    view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                 }
             })
             showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {

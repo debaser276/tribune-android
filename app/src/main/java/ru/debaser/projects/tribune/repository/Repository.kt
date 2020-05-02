@@ -43,11 +43,9 @@ object Repository {
     suspend fun register(username: String, password: String) =
         API.register(AuthRequestParams(username, password))
 
-    suspend fun getRecent(authorId: Long?) =
-        if (authorId == null)
-            API.getRecent()
-        else
-            API.getRecentByAuthor(authorId)
+    suspend fun getRecent() = API.getRecent()
+
+    suspend fun getRecentByAuthor(authorId: Long) = API.getRecentByAuthor(authorId)
 
     suspend fun postIdea(postIdeaRequest: PostIdeaRequest) = API.postIdea(postIdeaRequest)
 
@@ -70,6 +68,8 @@ object Repository {
     suspend fun getBefore(id: Long) = API.getBefore(id)
 
     suspend fun getAfterByAuthor(id: Long, authorId: Long) = API.getAfterByAuthor(id, authorId)
+
+    suspend fun getBeforeByAuthor(id: Long, authorId: Long) = API.getBeforeByAuthor(id, authorId)
 
     suspend fun getVotes(id: Long) = API.getVotes(id)
 

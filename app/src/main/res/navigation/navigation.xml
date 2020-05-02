@@ -79,6 +79,9 @@
             android:id="@+id/action_ideasByAuthorFragment_to_votesFragment"
             app:destination="@id/votesFragment"
             app:popUpTo="@+id/ideasFragment" />
+        <action
+            android:id="@+id/action_ideasByAuthorFragment_to_ideasFragment"
+            app:destination="@id/ideasFragment" />
     </fragment>
     <fragment
         android:id="@+id/votesFragment"
