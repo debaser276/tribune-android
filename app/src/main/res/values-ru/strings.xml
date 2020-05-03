@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_login">Введите логин</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="add_avatar">Добавьте аватар:</string>
+    <string name="add_link">Добавьте ссылку</string>
+    <string name="authentication">Аутентификация</string>
+    <string name="authentication_failed">Ошибка аутентификации</string>
+    <string name="cant_upload_image">Изображение не может быть загружено</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="create_idea">Создать идею</string>
+    <string name="create_new_idea">Создание новой идеи</string>
+    <string name="error_occured">Произошла ошибка</string>
+    <string name="getting_ideas">Получение идей</string>
+    <string name="getting_votes">Получение голосов</string>
+    <string name="gp_unavailable">Сервисы Google недоступны</string>
+    <string name="no_account"><u>Нет аккаунта?</u></string>
+    <string name="login">Логин</string>
+    <string name="register">Регистрация</string>
+    <string name="have_account"><u>Уже есть аккаунт?</u></string>
+    <string name="password_incorrect">Пароль неверный</string>
+    <string name="please_wait">Пожалуста, подождите</string>
+    <string name="try_again">Попробовать еще</string>
+    <string name="no_idea">Идей еще нет. Создайте свою</string>
+    <string name="hint_content">Введите текст для своей идеи (100 символов)</string>
+    <string name="post_idea">Добавить идею</string>
+    <string name="image_uploading">Изображение загружается</string>
+    <string name="success_idea">Идея успешно создана</string>
+    <string name="passwords_not_match">Пароли не совпадают</string>
+    <string name="registration">Регистрация</string>
+    <string name="registration_failed">Ошибка регистрации</string>
+    <string name="set_avatar">Установить аватар</string>
+    <string name="vote_once">Вы можете голосовать только один раз</string>
+    <string name="loaded_all_ideas">Загружены все идеи</string>
+    <string name="logout">Выйти</string>
+    <string name="no_idea_user">У пользователя еще нет идей</string>
+</resources>

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.method.TextKeyListener.clear
 import android.view.*
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
@@ -12,22 +11,16 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
-import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import retrofit2.Response
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.adapter.onScrolledToFooter
-import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.utils.API_SHARED_FILE
-import ru.debaser.projects.tribune.utils.getIsUserReader
 import ru.debaser.projects.tribune.utils.getUserId
 import ru.debaser.projects.tribune.utils.toast
-import ru.debaser.projects.tribune.view.IdeasFragmentDirections.actionIdeasFragmentToVotesFragment
 import ru.debaser.projects.tribune.viewmodel.IdeasByAuthorViewModel
-import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
 
 class IdeasByAuthorFragment : Fragment(),
     IdeaAdapter.OnLikeClickListener,
@@ -66,7 +59,7 @@ class IdeasByAuthorFragment : Fragment(),
                 onVotesClickListener = this@IdeasByAuthorFragment
                 onLinkClickListener = this@IdeasByAuthorFragment
             }
-            onScrolledToFooter { ideasViewModel.loadNew() }
+            onScrolledToFooter { ideasViewModel.loadMore() }
         }
 
         swipeContainer.setOnRefreshListener {

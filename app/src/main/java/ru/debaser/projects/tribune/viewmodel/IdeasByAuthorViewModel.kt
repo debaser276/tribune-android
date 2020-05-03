@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.iid.FirebaseInstanceId
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
@@ -59,7 +57,7 @@ class IdeasByAuthorViewModel(
         fun fail() {}
         fun newData(list: List<T>) {}
         fun release() {}
-        fun loadNew() {}
+        fun loadMore() {}
     }
 
     private inner class Empty:
@@ -80,8 +78,12 @@ class IdeasByAuthorViewModel(
         }
         override fun newData(list: List<IdeaModel>) {
             _showLoadingDialogEvent.value = false
-            currentState = Data()
-            _ideas.value = list.toMutableList()
+            if (list.isEmpty()) {
+                _showToastEvent.value = R.string.no_idea_user
+            } else {
+                currentState = Data()
+                _ideas.value = list.toMutableList()
+            }
         }
         override fun release() {
             _showLoadingDialogEvent.value = false
@@ -104,7 +106,7 @@ class IdeasByAuthorViewModel(
             currentState = Refresh()
             getAfter()
         }
-        override fun loadNew() {
+        override fun loadMore() {
             currentState = AddProgress()
             _showProgressBarEvent.value = true
             getBefore()
@@ -253,7 +255,7 @@ class IdeasByAuthorViewModel(
         currentState.refresh()
     }
 
-    fun loadNew() {
-        currentState.loadNew()
+    fun loadMore() {
+        currentState.loadMore()
     }
 }

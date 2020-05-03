@@ -7,17 +7,17 @@
     <string name="login">Login</string>
     <string name="confirm_password">Confirm password</string>
     <string name="register">Register</string>
-    <string name="have__account"><u>Already have an account?</u></string>
+    <string name="have_account"><u>Already have an account?</u></string>
     <string name="password_incorrect">Password incorrect</string>
     <string name="please_wait">Please wait</string>
     <string name="authentication">Authentication</string>
     <string name="authentication_failed">Authentication failed</string>
     <string name="error_occured">Error occured</string>
-    <string name="hater">Hater</string>
-    <string name="promoter">Promoter</string>
+    <string name="hater" translatable="false">Hater</string>
+    <string name="promoter" translatable="false">Promoter</string>
     <string name="getting_ideas">Getting ideas</string>
     <string name="try_again">Try again</string>
-    <string name="no_idea">There is no ideas yet. Create yours</string>
+    <string name="no_idea">There is no ideas yet. Create your</string>
     <string name="create_idea">Create Idea</string>
     <string name="hint_content">Enter text for your Idea (100 letters)</string>
     <string name="add_link">Add link</string>
@@ -30,14 +30,14 @@
     <string name="registration">Registration</string>
     <string name="registration_failed">Registration failed</string>
     <string name="add_avatar">Add avatar:</string>
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="set_avatar">Set avatar</string>
     <string name="vote_once">You can vote only once</string>
     <string name="loaded_all_ideas">Loaded all ideas</string>
     <string name="getting_votes">Getting votes</string>
     <string name="gp_unavailable">Google Play services unavailable</string>
     <string name="logout">Log out</string>
-    <string name="user_no_ideas">User hasn\'t posted any idea yet</string>
+    <string name="no_idea_user">This user hasn\'t added any ide yet.</string>
     <string-array name="post_item_list">
         <item>Take a photo</item>
         <item>Choose from gallery</item>

@@ -117,7 +117,7 @@
         android:id="@+id/haveAccountTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/have__account"
+        android:text="@string/have_account"
         android:textColor="@color/link"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
