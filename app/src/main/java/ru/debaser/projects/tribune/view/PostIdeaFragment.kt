@@ -17,9 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_postidea.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.PostIdeaRequest
@@ -77,10 +74,10 @@ class PostIdeaFragment : Fragment() {
                             toast(R.string.success_idea)
                             view.findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
                         } else {
-                            toast(R.string.error_occured)
+                            toast(R.string.error_occurred)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured)
+                        toast(R.string.error_occurred)
                     } finally {
                         dialog.dismiss()
                     }
@@ -135,7 +132,7 @@ class PostIdeaFragment : Fragment() {
                     toast(R.string.cant_upload_image)
                 }
             } catch (e: IOException) {
-                toast(R.string.error_occured)
+                toast(R.string.error_occurred)
             } finally {
                 dialog.dismiss()
             }

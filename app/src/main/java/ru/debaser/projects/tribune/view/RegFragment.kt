@@ -23,9 +23,6 @@ import kotlinx.android.synthetic.main.fragment_reg.loginEt
 import kotlinx.android.synthetic.main.fragment_reg.loginTil
 import kotlinx.android.synthetic.main.fragment_reg.passwordEt
 import kotlinx.android.synthetic.main.fragment_reg.passwordTil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.debaser.projects.tribune.R
@@ -82,7 +79,7 @@ class RegFragment : Fragment() {
                             toast(R.string.registration_failed)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured)
+                        toast(R.string.error_occurred)
                     } finally {
                         dialog.dismiss()
                     }
@@ -119,7 +116,7 @@ class RegFragment : Fragment() {
                     if (avatarId.isNotEmpty()) Repository.addAvatar(avatarId)
                     view?.findNavController()?.navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
                 } catch (e: IOException) {
-                    toast(R.string.error_occured)
+                    toast(R.string.error_occurred)
                 } finally {
                     dialog.dismiss()
                 }
@@ -185,7 +182,7 @@ class RegFragment : Fragment() {
                     toast(R.string.cant_upload_image)
                 }
             } catch (e: IOException) {
-                toast(R.string.error_occured)
+                toast(R.string.error_occurred)
             } finally {
                 dialog.dismiss()
             }

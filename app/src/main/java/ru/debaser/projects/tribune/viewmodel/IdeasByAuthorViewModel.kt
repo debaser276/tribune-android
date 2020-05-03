@@ -126,7 +126,7 @@ class IdeasByAuthorViewModel(
         override fun fail() {
             currentState = Data()
             _showLoadingDialogEvent.value = false
-            _showToastEvent.value = R.string.error_occured
+            _showToastEvent.value = R.string.error_occurred
         }
     }
 
@@ -148,7 +148,7 @@ class IdeasByAuthorViewModel(
         override fun fail() {
             currentState = Data()
             _showProgressBarEvent.value = false
-            _showToastEvent.value = R.string.error_occured
+            _showToastEvent.value = R.string.error_occurred
         }
     }
 
@@ -217,7 +217,7 @@ class IdeasByAuthorViewModel(
                     idea.updateLikes(response.body()!!)
                 }
             } catch (e: IOException) {
-                _showToastEvent.value = R.string.error_occured
+                _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.likeActionPerforming = false
                 ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
@@ -235,7 +235,7 @@ class IdeasByAuthorViewModel(
                     idea.updateDislikes(response.body()!!)
                 }
             } catch (e: IOException) {
-                _showToastEvent.value = R.string.error_occured
+                _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.dislikeActionPerforming = false
                 ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)

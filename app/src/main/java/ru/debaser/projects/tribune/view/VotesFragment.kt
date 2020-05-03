@@ -9,8 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.VoteAdapter
@@ -52,7 +50,7 @@ class VotesFragment : Fragment(),
                     toast(R.string.cant_upload_image)
                 }
             } catch (e: IOException) {
-                toast(R.string.error_occured)
+                toast(R.string.error_occurred)
             } finally {
                 dialog.dismiss()
             }

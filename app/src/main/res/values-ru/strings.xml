@@ -10,7 +10,7 @@
     <string name="confirm_password">Подтвердите пароль</string>
     <string name="create_idea">Создать идею</string>
     <string name="create_new_idea">Создание новой идеи</string>
-    <string name="error_occured">Произошла ошибка</string>
+    <string name="error_occurred">Произошла ошибка</string>
     <string name="getting_ideas">Получение идей</string>
     <string name="getting_votes">Получение голосов</string>
     <string name="gp_unavailable">Сервисы Google недоступны</string>

@@ -1,7 +1,6 @@
 package ru.debaser.projects.tribune.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView

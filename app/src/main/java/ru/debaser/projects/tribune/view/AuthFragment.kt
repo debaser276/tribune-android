@@ -11,9 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_auth.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.debaser.projects.tribune.*
@@ -66,7 +63,7 @@ class AuthFragment : Fragment() {
                             toast(R.string.authentication_failed)
                         }
                     } catch (e: IOException) {
-                        toast(R.string.error_occured)
+                        toast(R.string.error_occurred)
                     } finally {
                         dialog.dismiss()
                     }

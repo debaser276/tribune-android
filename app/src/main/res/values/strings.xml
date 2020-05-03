@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Tribune</string>
-    <string name="tribune_title">Tribune</string>
+    <string name="app_name" translatable="false">Tribune</string>
+    <string name="tribune_title" translatable="false">Tribune</string>
     <string name="enter_login">Enter login</string>
     <string name="enter_password">Enter password</string>
     <string name="no_account"><u>Don\'t have an account?</u></string>
@@ -12,7 +12,7 @@
     <string name="please_wait">Please wait</string>
     <string name="authentication">Authentication</string>
     <string name="authentication_failed">Authentication failed</string>
-    <string name="error_occured">Error occured</string>
+    <string name="error_occurred">Error occurred</string>
     <string name="hater" translatable="false">Hater</string>
     <string name="promoter" translatable="false">Promoter</string>
     <string name="getting_ideas">Getting ideas</string>

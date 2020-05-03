@@ -1,6 +1,5 @@
 package ru.debaser.projects.tribune.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
@@ -125,7 +124,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         override fun fail() {
             currentState = Data()
             _showLoadingDialogEvent.value = false
-            _showToastEvent.value = R.string.error_occured
+            _showToastEvent.value = R.string.error_occurred
         }
     }
 
@@ -147,7 +146,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
         override fun fail() {
             currentState = Data()
             _showProgressBarEvent.value = false
-            _showToastEvent.value = R.string.error_occured
+            _showToastEvent.value = R.string.error_occurred
         }
     }
 
@@ -216,7 +215,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
                     idea.updateLikes(response.body()!!)
                 }
             } catch (e: IOException) {
-                _showToastEvent.value = R.string.error_occured
+                _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.likeActionPerforming = false
                 ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
@@ -234,7 +233,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
                     idea.updateDislikes(response.body()!!)
                 }
             } catch (e: IOException) {
-                _showToastEvent.value = R.string.error_occured
+                _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.dislikeActionPerforming = false
                 ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)

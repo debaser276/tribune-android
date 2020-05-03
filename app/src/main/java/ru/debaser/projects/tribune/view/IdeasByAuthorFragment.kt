@@ -131,7 +131,7 @@ class IdeasByAuthorFragment : Fragment(),
 
     private fun showEmptyError() {
         errorRv.visibility = View.VISIBLE
-        errorTv.setText(R.string.error_occured)
+        errorTv.setText(R.string.error_occurred)
         errorBtn.setOnClickListener {
             ideasViewModel.refresh()
             errorRv.visibility = View.GONE
