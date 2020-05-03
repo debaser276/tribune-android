@@ -8,7 +8,7 @@ import ru.debaser.projects.tribune.model.VoteModel
 
 class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolder>() {
 
-    var onAvatarClickListener: OnAvatarClickListener? = null
+    var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VoteViewHolder =
         VoteViewHolder(
@@ -23,7 +23,7 @@ class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolde
         holder.bind(list[position])
     }
 
-    interface OnAvatarClickListener {
-        fun onAvatarClickListener(vote: VoteModel)
+    interface OnItemClickListener {
+        fun onItemClickListener(vote: VoteModel)
     }
 }

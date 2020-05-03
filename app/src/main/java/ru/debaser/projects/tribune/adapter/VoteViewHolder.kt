@@ -14,13 +14,11 @@ import java.util.*
 class VoteViewHolder(adapter: VoteAdapter, view: View): RecyclerView.ViewHolder(view) {
 
     init {
-        with (itemView) {
-            avatarIv.setOnClickListener {
-                val currentPosition = adapterPosition
-                if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
-                    adapter.onAvatarClickListener?.onAvatarClickListener(item)
-                }
+        itemView.setOnClickListener {
+            val currentPosition = adapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                val item = adapter.list[currentPosition]
+                adapter.onItemClickListener?.onItemClickListener(item)
             }
         }
     }

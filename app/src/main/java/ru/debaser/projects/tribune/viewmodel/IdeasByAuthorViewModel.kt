@@ -41,7 +41,7 @@ class IdeasByAuthorViewModel(
     val cancelRefreshingEvent: LiveData<Boolean>
         get() = _cancelRefreshingEvent
 
-    private val _showToastEvent = MutableLiveData<Int>()
+    private val _showToastEvent = SingleLiveEvent<Int>()
     val showToastEvent: LiveData<Int>
         get() = _showToastEvent
 

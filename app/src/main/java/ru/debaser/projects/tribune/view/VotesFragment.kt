@@ -20,7 +20,7 @@ import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
 class VotesFragment : Fragment(),
-    VoteAdapter.OnAvatarClickListener
+    VoteAdapter.OnItemClickListener
 {
 
     private lateinit var voteAdapter: VoteAdapter
@@ -63,13 +63,13 @@ class VotesFragment : Fragment(),
         with (votesRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
             voteAdapter = VoteAdapter(list.toMutableList()).apply {
-                onAvatarClickListener = this@VotesFragment
+                onItemClickListener = this@VotesFragment
             }
             adapter = voteAdapter
         }
     }
 
-    override fun onAvatarClickListener(vote: VoteModel) {
+    override fun onItemClickListener(vote: VoteModel) {
         view?.findNavController()?.navigate(VotesFragmentDirections.actionVotesFragmentToIdeasByAuthorFragment(vote.authorId))
     }
 }
