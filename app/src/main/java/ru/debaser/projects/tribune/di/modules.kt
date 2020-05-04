@@ -7,6 +7,6 @@ import ru.debaser.projects.tribune.viewmodel.IdeasByAuthorViewModel
 import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
 
 val applicationModule = module {
-    viewModel { (ideaAdapter: IdeaAdapter) -> IdeasViewModel(ideaAdapter) }
+    viewModel { IdeasViewModel() }
     viewModel { (ideaAdapter: IdeaAdapter, authorId: Long) -> IdeasByAuthorViewModel(ideaAdapter, authorId) }
 }

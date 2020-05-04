@@ -32,9 +32,7 @@ class IdeasFragment : Fragment(),
     IdeaAdapter.OnVotesClickListener,
     IdeaAdapter.OnLinkClickListener
 {
-    private val ideasViewModel: IdeasViewModel by viewModel {
-        parametersOf(ideaAdapter)
-    }
+    private val ideasViewModel: IdeasViewModel by viewModel()
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
 
     companion object {
@@ -114,9 +112,7 @@ class IdeasFragment : Fragment(),
                 progressBar.isVisible = it
             }
             ideas.observe(viewLifecycleOwner) {
-                it.let {
-                    ideaAdapter.list = it
-                }
+                ideaAdapter.submit(it)
             }
         }
     }

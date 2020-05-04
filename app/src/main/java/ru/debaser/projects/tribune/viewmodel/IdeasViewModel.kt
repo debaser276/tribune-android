@@ -11,7 +11,7 @@ import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.notifyObserver
 import java.io.IOException
 
-class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
+class IdeasViewModel() : ViewModel() {
 
     private var currentState: State<IdeaModel>
 
@@ -176,7 +176,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfter(ideaAdapter.list[0].id)
+                val response = Repository.getAfter(_ideas.value!![0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -192,7 +192,7 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBefore(ideaAdapter.list[ideaAdapter.list.size - 1].id)
+                val response = Repository.getBefore(_ideas.value!![_ideas.value!!.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -207,36 +207,35 @@ class IdeasViewModel(private val ideaAdapter: IdeaAdapter) : ViewModel() {
 
     fun likeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            idea.likeActionPerforming = true
-            ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
+            _ideas.value!![position].likeActionPerforming = true
             try {
                 val response = Repository.like(idea.id)
                 if (response.isSuccessful) {
-                    idea.updateLikes(response.body()!!)
+                    _ideas.value!![position].updateLikes(response.body()!!)
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                idea.likeActionPerforming = false
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
+                _ideas.value!![position].likeActionPerforming = false
             }
         }
     }
 
     fun dislikeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            idea.dislikeActionPerforming = true
+            _ideas.value!![position].dislikeActionPerforming = true
+            _ideas.notifyObserver()
             try {
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
                 val response = Repository.dislike(idea.id)
                 if (response.isSuccessful) {
-                    idea.updateDislikes(response.body()!!)
+                    _ideas.value!![position].updateDislikes(response.body()!!)
+                    _ideas.notifyObserver()
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                idea.dislikeActionPerforming = false
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
+                _ideas.value!![position].dislikeActionPerforming = false
+                _ideas.notifyObserver()
             }
         }
     }
