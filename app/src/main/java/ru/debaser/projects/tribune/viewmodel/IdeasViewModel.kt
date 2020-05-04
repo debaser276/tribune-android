@@ -14,10 +14,11 @@ import java.io.IOException
 class IdeasViewModel() : ViewModel() {
 
     private var currentState: State<IdeaModel>
+    var ideas = mutableListOf<IdeaModel>()
 
-    private val _ideas = MutableLiveData<MutableList<IdeaModel>>()
-    val ideas: LiveData<MutableList<IdeaModel>>
-        get() = _ideas
+    private val _changeIdeasEvent = MutableLiveData<Boolean>()
+    val changeIdeasEvent: LiveData<Boolean>
+        get() = _changeIdeasEvent
 
     private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
     val showLoadingDialogEvent: LiveData<Boolean>
@@ -78,7 +79,8 @@ class IdeasViewModel() : ViewModel() {
                 _showToastEvent.value = R.string.no_idea
             } else {
                 currentState = Data()
-                _ideas.value = list.toMutableList()
+                ideas.addAll(list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun release() {
@@ -93,6 +95,7 @@ class IdeasViewModel() : ViewModel() {
             currentState = EmptyProgress()
             _showLoadingDialogEvent.value = true
             getRecent()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -101,11 +104,13 @@ class IdeasViewModel() : ViewModel() {
         override fun refresh() {
             currentState = Refresh()
             getAfter()
+            _changeIdeasEvent.value = true
         }
         override fun loadMore() {
             currentState = AddProgress()
             _showProgressBarEvent.value = true
             getBefore()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -115,10 +120,8 @@ class IdeasViewModel() : ViewModel() {
             currentState = Data()
             _cancelRefreshingEvent.value = true
             if (list.isNotEmpty()) {
-                with(_ideas) {
-                    value?.addAll(0, list)
-                    notifyObserver()
-                }
+                ideas.addAll(0, list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun fail() {
@@ -137,10 +140,8 @@ class IdeasViewModel() : ViewModel() {
                 _showToastEvent.value = R.string.loaded_all_ideas
             } else {
                 currentState = Data()
-                with (_ideas) {
-                    value?.addAll(list)
-                    notifyObserver()
-                }
+                ideas.addAll(list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun fail() {
@@ -155,6 +156,7 @@ class IdeasViewModel() : ViewModel() {
         override fun refresh() {
             currentState = Refresh()
             getAfter()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -176,7 +178,7 @@ class IdeasViewModel() : ViewModel() {
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfter(_ideas.value!![0].id)
+                val response = Repository.getAfter(ideas[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -192,7 +194,7 @@ class IdeasViewModel() : ViewModel() {
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBefore(_ideas.value!![_ideas.value!!.size - 1].id)
+                val response = Repository.getBefore(ideas[ideas.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -207,35 +209,38 @@ class IdeasViewModel() : ViewModel() {
 
     fun likeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            _ideas.value!![position].likeActionPerforming = true
+            ideas[position].likeActionPerforming = true
+            _changeIdeasEvent.value = true
             try {
                 val response = Repository.like(idea.id)
                 if (response.isSuccessful) {
-                    _ideas.value!![position].updateLikes(response.body()!!)
+                    ideas[position].updateLikes(response.body()!!)
+                    _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                _ideas.value!![position].likeActionPerforming = false
+                ideas[position].likeActionPerforming = false
+                _changeIdeasEvent.value = true
             }
         }
     }
 
     fun dislikeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            _ideas.value!![position].dislikeActionPerforming = true
-            _ideas.notifyObserver()
+            ideas[position].dislikeActionPerforming = true
+            _changeIdeasEvent.value = true
             try {
                 val response = Repository.dislike(idea.id)
                 if (response.isSuccessful) {
-                    _ideas.value!![position].updateDislikes(response.body()!!)
-                    _ideas.notifyObserver()
+                    ideas[position].updateDislikes(response.body()!!)
+                    _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                _ideas.value!![position].dislikeActionPerforming = false
-                _ideas.notifyObserver()
+                ideas[position].dislikeActionPerforming = false
+                _changeIdeasEvent.value = true
             }
         }
     }
@@ -246,6 +251,10 @@ class IdeasViewModel() : ViewModel() {
                 Repository.registerPushToken(it.token)
             }
         }
+    }
+
+    fun changeIdeasEventDone() {
+        _changeIdeasEvent.value = false
     }
 
     fun deleteToken() {

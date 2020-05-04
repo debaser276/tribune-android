@@ -111,8 +111,11 @@ class IdeasFragment : Fragment(),
             showProgressBarEvent.observe(viewLifecycleOwner) {
                 progressBar.isVisible = it
             }
-            ideas.observe(viewLifecycleOwner) {
-                ideaAdapter.submit(it)
+            changeIdeasEvent.observe(viewLifecycleOwner) {
+                if (it) {
+                    ideaAdapter.submit(ideas)
+                    changeIdeasEventDone()
+                }
             }
         }
     }
