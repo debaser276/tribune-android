@@ -6,8 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.core.content.edit
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
@@ -67,35 +68,35 @@ class IdeasByAuthorFragment : Fragment(),
         }
 
         with (ideasViewModel) {
-            showLoadingDialogEvent.observe(viewLifecycleOwner, Observer {
+            showLoadingDialogEvent.observe(viewLifecycleOwner) {
                 showLoadingDialog(dialog, it)
-            })
-            noAuthEvent.observe(viewLifecycleOwner, Observer {
+            }
+            noAuthEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     clearCredentialsAndDeletePushToken()
                     ideasViewModel.noAuthEventDone()
                 }
-            })
-            showEmptyErrorEvent.observe(viewLifecycleOwner, Observer {
+            }
+            showEmptyErrorEvent.observe(viewLifecycleOwner) {
                 if (it) showEmptyError()
-            })
-            cancelRefreshingEvent.observe(viewLifecycleOwner, Observer {
+            }
+            cancelRefreshingEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     swipeContainer.isRefreshing = !it
                     cancelRefreshingEventDone()
                 }
-            })
-            showToastEvent.observe(viewLifecycleOwner, Observer {
+            }
+            showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)
-            })
-            showProgressBarEvent.observe(viewLifecycleOwner, Observer {
-                showProgressBar(it)
-            })
-            ideas.observe(viewLifecycleOwner, Observer {
+            }
+            showProgressBarEvent.observe(viewLifecycleOwner) {
+                progressBar.isVisible = it
+            }
+            ideas.observe(viewLifecycleOwner) {
                 it?.let {
                     ideaAdapter.list = it
                 }
-            })
+            }
         }
     }
 
@@ -135,14 +136,6 @@ class IdeasByAuthorFragment : Fragment(),
         errorBtn.setOnClickListener {
             ideasViewModel.refresh()
             errorRv.visibility = View.GONE
-        }
-    }
-
-    private fun showProgressBar(show: Boolean) {
-        if (show) {
-            progressBar.visibility = View.VISIBLE
-        } else {
-            progressBar.visibility = View.GONE
         }
     }
 

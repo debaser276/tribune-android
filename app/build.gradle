@@ -54,4 +54,5 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.6'
     implementation "org.koin:koin-android-viewmodel:2.1.5"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }
