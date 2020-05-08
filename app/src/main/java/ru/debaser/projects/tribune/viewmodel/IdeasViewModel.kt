@@ -5,10 +5,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.R
-import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
-import ru.debaser.projects.tribune.utils.notifyObserver
 import java.io.IOException
 
 class IdeasViewModel() : ViewModel() {
@@ -63,6 +61,7 @@ class IdeasViewModel() : ViewModel() {
             currentState = EmptyProgress()
             _showLoadingDialogEvent.value = true
             getRecent()
+            _changeIdeasEvent.value = true
         }
     }
 

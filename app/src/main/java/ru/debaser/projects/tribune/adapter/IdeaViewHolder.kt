@@ -18,35 +18,35 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
             avatarIv.setOnClickListener {
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
+                    val item = adapter.ideas[currentPosition]
                     adapter.onAvatarClickListener?.onAvatarClickListener(item)
                 }
             }
             likeIv.setOnClickListener {
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
+                    val item = adapter.ideas[currentPosition]
                     adapter.onLikeClickListener?.onLikeClickListener(item, currentPosition)
                 }
             }
             dislikeIv.setOnClickListener {
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
+                    val item = adapter.ideas[currentPosition]
                     adapter.onDislikeClickListener?.onDislikeClickListener(item, currentPosition)
                 }
             }
             votesIv.setOnClickListener {
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
+                    val item = adapter.ideas[currentPosition]
                     adapter.onVotesClickListener?.onVotesClickListener(item)
                 }
             }
             linkIv.setOnClickListener {
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    val item = adapter.list[currentPosition]
+                    val item = adapter.ideas[currentPosition]
                     adapter.onLinkClickListener?.onLinkClickListener(item)
                 }
             }
@@ -54,7 +54,7 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
     }
 
     fun bind(idea: IdeaModel) {
-        with (itemView) {
+            with (itemView) {
             if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
             authorTv.text = idea.author
             dateTv.text = SimpleDateFormat("dd MMM hh:mm").format(Date(idea.created * 1000L))

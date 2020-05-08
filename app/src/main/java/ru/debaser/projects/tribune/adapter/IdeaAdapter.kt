@@ -15,19 +15,19 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
     var onVotesClickListener: OnVotesClickListener? = null
     var onLinkClickListener: OnLinkClickListener? = null
 
-    var list = mutableListOf<IdeaModel>()
+    var ideas = mutableListOf<IdeaModel>()
 
     companion object {
         const val PAYLOAD_LIKE = "payload_like"
         const val PAYLOAD_DISLIKE = "payload_dislike"
     }
 
-    fun submit(list: MutableList<IdeaModel>) {
-        val oldList = this.list
+    fun submit(newList: MutableList<IdeaModel>) {
+        val oldList = ideas
         val diffResult = DiffUtil.calculateDiff(
-            IdeaDiffUtilCallback(oldList, list)
+            IdeaDiffUtilCallback(oldList, newList)
         )
-        this.list = list
+        ideas = newList.map { it.copy() }.toMutableList()
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -37,10 +37,10 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.idea_item_view, parent, false))
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = ideas.size
 
     override fun onBindViewHolder(holder: IdeaViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(ideas[position])
     }
 
     override fun onBindViewHolder(
@@ -51,12 +51,12 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
         if (payloads.isNotEmpty()) {
             for (payload in payloads) {
                 when (payload) {
-                    PAYLOAD_LIKE -> holder.like(list[position])
-                    PAYLOAD_DISLIKE -> holder.dislike(list[position])
+                    PAYLOAD_LIKE -> holder.like(ideas[position])
+                    PAYLOAD_DISLIKE -> holder.dislike(ideas[position])
                 }
             }
         } else {
-            super.onBindViewHolder(holder, position, payloads)
+            onBindViewHolder(holder, position)
         }
     }
 
@@ -74,12 +74,15 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
-            val set = mutableListOf<String>()
-            val isLikeActionTheSame = old.likeActionPerforming == new.likeActionPerforming
-            val isDislikeActionTheSame = old.dislikeActionPerforming == new.dislikeActionPerforming
-            if (isLikeActionTheSame.not()) set.add(PAYLOAD_LIKE)
-            if (isDislikeActionTheSame.not()) set.add(PAYLOAD_DISLIKE)
-            return set
+            val isLikeAction = old.likeActionPerforming != new.likeActionPerforming ||
+                old.likes.size != new.likes.size
+            val isDislikeAction = old.dislikeActionPerforming != new.dislikeActionPerforming ||
+                old.dislikes.size != new.dislikes.size
+            return when {
+                isLikeAction -> PAYLOAD_LIKE
+                isDislikeAction -> PAYLOAD_DISLIKE
+                else -> null
+            }
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

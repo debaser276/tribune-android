@@ -18,10 +18,11 @@ class IdeasByAuthorViewModel(
 ) : ViewModel() {
 
     private var currentState: State<IdeaModel>
+    var ideas = mutableListOf<IdeaModel>()
 
-    private val _ideas = MutableLiveData<MutableList<IdeaModel>>()
-    val ideas: LiveData<MutableList<IdeaModel>>
-        get() = _ideas
+    private val _changeIdeasEvent = MutableLiveData<Boolean>()
+    val changeIdeasEvent: LiveData<Boolean>
+        get() = _changeIdeasEvent
 
     private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
     val showLoadingDialogEvent: LiveData<Boolean>
@@ -66,6 +67,7 @@ class IdeasByAuthorViewModel(
             currentState = EmptyProgress()
             _showLoadingDialogEvent.value = true
             getRecent()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -82,7 +84,8 @@ class IdeasByAuthorViewModel(
                 _showToastEvent.value = R.string.no_idea_user
             } else {
                 currentState = Data()
-                _ideas.value = list.toMutableList()
+                ideas.addAll(list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun release() {
@@ -97,6 +100,7 @@ class IdeasByAuthorViewModel(
             currentState = EmptyProgress()
             _showLoadingDialogEvent.value = true
             getRecent()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -105,11 +109,13 @@ class IdeasByAuthorViewModel(
         override fun refresh() {
             currentState = Refresh()
             getAfter()
+            _changeIdeasEvent.value = true
         }
         override fun loadMore() {
             currentState = AddProgress()
             _showProgressBarEvent.value = true
             getBefore()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -118,9 +124,9 @@ class IdeasByAuthorViewModel(
         override fun newData(list: List<IdeaModel>) {
             currentState = Data()
             _cancelRefreshingEvent.value = true
-            with (_ideas) {
-                value?.addAll(0, list)
-                notifyObserver()
+            if (list.isNotEmpty()) {
+                ideas.addAll(0, list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun fail() {
@@ -139,10 +145,8 @@ class IdeasByAuthorViewModel(
                 _showToastEvent.value = R.string.loaded_all_ideas
             } else {
                 currentState = Data()
-                with (_ideas) {
-                    value?.addAll(list)
-                    notifyObserver()
-                }
+                ideas.addAll(list)
+                _changeIdeasEvent.value = true
             }
         }
         override fun fail() {
@@ -157,6 +161,7 @@ class IdeasByAuthorViewModel(
         override fun refresh() {
             currentState = Refresh()
             getAfter()
+            _changeIdeasEvent.value = true
         }
     }
 
@@ -178,7 +183,7 @@ class IdeasByAuthorViewModel(
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfterByAuthor(authorId, ideaAdapter.list[0].id)
+                val response = Repository.getAfterByAuthor(authorId, ideaAdapter.ideas[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -194,7 +199,7 @@ class IdeasByAuthorViewModel(
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBeforeByAuthor(authorId, ideaAdapter.list[ideaAdapter.list.size - 1].id)
+                val response = Repository.getBeforeByAuthor(authorId, ideaAdapter.ideas[ideaAdapter.ideas.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -241,6 +246,10 @@ class IdeasByAuthorViewModel(
                 ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
             }
         }
+    }
+
+    fun changeIdeasEventDone() {
+        _changeIdeasEvent.value = false
     }
 
     fun noAuthEventDone() {

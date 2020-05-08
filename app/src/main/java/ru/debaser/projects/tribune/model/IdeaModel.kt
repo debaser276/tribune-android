@@ -12,10 +12,10 @@ data class IdeaModel (
     val media: String,
     val link: String,
     var likes: Set<Long>,
-    var dislikes: Set<Long>
+    var dislikes: Set<Long>,
+    var likeActionPerforming: Boolean = false,
+    var dislikeActionPerforming: Boolean = false
 ) {
-    var likeActionPerforming = false
-    var dislikeActionPerforming = false
 
     fun updateLikes(idea: IdeaModel) {
         likes = idea.likes

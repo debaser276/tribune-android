@@ -92,9 +92,10 @@ class IdeasByAuthorFragment : Fragment(),
             showProgressBarEvent.observe(viewLifecycleOwner) {
                 progressBar.isVisible = it
             }
-            ideas.observe(viewLifecycleOwner) {
-                it?.let {
-                    ideaAdapter.list = it
+            changeIdeasEvent.observe(viewLifecycleOwner) {
+                if (it) {
+                    ideaAdapter.submit(ideas)
+                    changeIdeasEventDone()
                 }
             }
         }
