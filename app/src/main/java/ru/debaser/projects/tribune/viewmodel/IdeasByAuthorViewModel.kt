@@ -9,11 +9,9 @@ import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
-import ru.debaser.projects.tribune.utils.notifyObserver
 import java.io.IOException
 
 class IdeasByAuthorViewModel(
-    private val ideaAdapter: IdeaAdapter,
     private val authorId: Long
 ) : ViewModel() {
 
@@ -183,7 +181,7 @@ class IdeasByAuthorViewModel(
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfterByAuthor(authorId, ideaAdapter.ideas[0].id)
+                val response = Repository.getAfterByAuthor(authorId, ideas[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -199,7 +197,7 @@ class IdeasByAuthorViewModel(
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBeforeByAuthor(authorId, ideaAdapter.ideas[ideaAdapter.ideas.size - 1].id)
+                val response = Repository.getBeforeByAuthor(authorId, ideas[ideas.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -215,17 +213,18 @@ class IdeasByAuthorViewModel(
     fun likeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
             idea.likeActionPerforming = true
-            ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
+            _changeIdeasEvent.value = true
             try {
                 val response = Repository.like(idea.id)
                 if (response.isSuccessful) {
                     idea.updateLikes(response.body()!!)
+                    _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.likeActionPerforming = false
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_LIKE)
+                _changeIdeasEvent.value = true
             }
         }
     }
@@ -233,17 +232,18 @@ class IdeasByAuthorViewModel(
     fun dislikeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
             idea.dislikeActionPerforming = true
+            _changeIdeasEvent.value = true
             try {
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
                 val response = Repository.dislike(idea.id)
                 if (response.isSuccessful) {
                     idea.updateDislikes(response.body()!!)
+                    _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
                 idea.dislikeActionPerforming = false
-                ideaAdapter.notifyItemChanged(position, IdeaAdapter.PAYLOAD_DISLIKE)
+                _changeIdeasEvent.value = true
             }
         }
     }

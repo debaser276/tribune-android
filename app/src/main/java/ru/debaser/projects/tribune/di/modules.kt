@@ -8,5 +8,5 @@ import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
 
 val applicationModule = module {
     viewModel { IdeasViewModel() }
-    viewModel { (ideaAdapter: IdeaAdapter, authorId: Long) -> IdeasByAuthorViewModel(ideaAdapter, authorId) }
+    viewModel { (authorId: Long) -> IdeasByAuthorViewModel(authorId) }
 }

@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_ideas.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -30,7 +31,7 @@ class IdeasByAuthorFragment : Fragment(),
     IdeaAdapter.OnLinkClickListener
 {
     private val ideasViewModel: IdeasByAuthorViewModel by viewModel {
-        parametersOf(ideaAdapter, IdeasByAuthorFragmentArgs.fromBundle(arguments!!).authorId)
+        parametersOf(IdeasByAuthorFragmentArgs.fromBundle(arguments!!).authorId)
     }
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
 
@@ -110,17 +111,14 @@ class IdeasByAuthorFragment : Fragment(),
         when (item.itemId) {
             R.id.logout -> {
                 clearCredentialsAndDeletePushToken()
-                view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
+                findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
     private fun clearCredentialsAndDeletePushToken() {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
-            clear()
-            apply()
-        }
+        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit { clear() }
     }
 
     private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
@@ -162,7 +160,7 @@ class IdeasByAuthorFragment : Fragment(),
     }
 
     override fun onVotesClickListener(idea: IdeaModel) {
-        view?.findNavController()?.navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToVotesFragment(idea.id))
+        findNavController().navigate(IdeasByAuthorFragmentDirections.actionIdeasByAuthorFragmentToVotesFragment(idea.id))
     }
 
     override fun onLinkClickListener(idea: IdeaModel) {

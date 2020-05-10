@@ -58,7 +58,7 @@ class AuthFragment : Fragment() {
                             Repository.createRetrofitWithAuthToken(
                                 response.body()!!.token
                             )
-                            view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
+                            findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
                         } else {
                             toast(R.string.authentication_failed)
                         }
@@ -72,7 +72,7 @@ class AuthFragment : Fragment() {
         }
 
         noAccountTv.setOnClickListener {
-            view.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToRegFragment())
+            findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToRegFragment())
         }
     }
 

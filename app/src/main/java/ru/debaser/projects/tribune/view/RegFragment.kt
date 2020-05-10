@@ -17,6 +17,7 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_reg.*
 import kotlinx.android.synthetic.main.fragment_reg.loginEt
@@ -51,7 +52,7 @@ class RegFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         haveAccountTv.setOnClickListener {
-            view.findNavController().navigate(RegFragmentDirections.actionRegFragmentToAuthFragment())
+            findNavController().navigate(RegFragmentDirections.actionRegFragmentToAuthFragment())
         }
         regBtn.setOnClickListener {
             hideKeyboard()
@@ -114,7 +115,7 @@ class RegFragment : Fragment() {
                     R.string.set_avatar).apply { show() }
                 try {
                     if (avatarId.isNotEmpty()) Repository.addAvatar(avatarId)
-                    view?.findNavController()?.navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
+                    findNavController().navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
                 } catch (e: IOException) {
                     toast(R.string.error_occurred)
                 } finally {

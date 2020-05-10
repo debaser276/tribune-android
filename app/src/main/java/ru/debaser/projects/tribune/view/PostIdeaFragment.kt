@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_postidea.*
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ class PostIdeaFragment : Fragment() {
                             )
                         if (result.isSuccessful) {
                             toast(R.string.success_idea)
-                            view.findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
+                            findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
                         } else {
                             toast(R.string.error_occurred)
                         }

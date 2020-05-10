@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
 import kotlinx.coroutines.launch
@@ -68,6 +69,6 @@ class VotesFragment : Fragment(),
     }
 
     override fun onItemClickListener(vote: VoteModel) {
-        view?.findNavController()?.navigate(VotesFragmentDirections.actionVotesFragmentToIdeasByAuthorFragment(vote.authorId))
+        findNavController().navigate(VotesFragmentDirections.actionVotesFragmentToIdeasByAuthorFragment(vote.authorId))
     }
 }

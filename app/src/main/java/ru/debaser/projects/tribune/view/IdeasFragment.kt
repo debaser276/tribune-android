@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -76,8 +77,7 @@ class IdeasFragment : Fragment(),
 
         if (!requireActivity().getIsUserReader()) {
             fab.setOnClickListener {
-                view.findNavController()
-                    .navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
+                findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToPostIdeaFragment())
             }
         }
 
@@ -93,7 +93,7 @@ class IdeasFragment : Fragment(),
                 if (it) {
                     clearCredentialsAndDeletePushToken()
                     ideasViewModel.noAuthEventDone()
-                    view.findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
+                    findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                 }
             }
             showEmptyErrorEvent.observe(viewLifecycleOwner) {
@@ -129,17 +129,14 @@ class IdeasFragment : Fragment(),
         when (item.itemId) {
             R.id.logout -> {
                 clearCredentialsAndDeletePushToken()
-                view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
+                findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToAuthFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
     private fun clearCredentialsAndDeletePushToken() {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
-            clear()
-            apply()
-        }
+        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit { clear() }
         ideasViewModel.deleteToken()
         (activity as AppCompatActivity).supportActionBar?.subtitle = null
     }
@@ -190,7 +187,7 @@ class IdeasFragment : Fragment(),
     }
 
     override fun onAvatarClickListener(ideaModel: IdeaModel) {
-        view?.findNavController()?.navigate(
+        findNavController().navigate(
             IdeasFragmentDirections.actionIdeasFragmentToIdeasByAuthorFragment(
                 ideaModel.authorId
             )
@@ -219,7 +216,7 @@ class IdeasFragment : Fragment(),
     }
 
     override fun onVotesClickListener(idea: IdeaModel) {
-        view?.findNavController()?.navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
+        findNavController().navigate(IdeasFragmentDirections.actionIdeasFragmentToVotesFragment(idea.id))
     }
 
     override fun onLinkClickListener(idea: IdeaModel) {
