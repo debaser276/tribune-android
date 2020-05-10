@@ -141,6 +141,7 @@ class IdeasFragment : Fragment(),
             apply()
         }
         ideasViewModel.deleteToken()
+        (activity as AppCompatActivity).supportActionBar?.subtitle = null
     }
 
     private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
