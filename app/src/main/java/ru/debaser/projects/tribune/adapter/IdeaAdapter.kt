@@ -84,8 +84,7 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val res = oldList[oldItemPosition].equals(newList[newItemPosition])
-            return res
+            return oldList[oldItemPosition].equals(newList[newItemPosition])
         }
     }
 
