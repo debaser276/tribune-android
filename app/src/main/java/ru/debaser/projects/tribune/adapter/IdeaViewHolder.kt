@@ -72,6 +72,12 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
                 false -> promoterTv.visibility = View.GONE
             }
 
+            likesTv.setTextColor(contentTv.textColors)
+            likeIv.setColorFilter(Color.BLACK)
+
+            dislikesTv.setTextColor(contentTv.textColors)
+            dislikeIv.setColorFilter(Color.BLACK)
+
             like(idea)
 
             dislike(idea)
