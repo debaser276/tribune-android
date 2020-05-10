@@ -1,6 +1,7 @@
 package ru.debaser.projects.tribune.view
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +9,11 @@ import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import retrofit2.Response
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.Me
@@ -20,14 +22,15 @@ import ru.debaser.projects.tribune.utils.*
 import java.io.IOException
 
 class AuthFragment : Fragment() {
+    private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         if (isAuthenticated()) {
-            val token = requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).getString(
-                AUTHENTICATED_SHARED_TOKEN, "")
+            val token = sharedPref.getString(AUTHENTICATED_SHARED_TOKEN, "")
             Repository.createRetrofitWithAuthToken(
                 token!!
             )
@@ -82,12 +85,10 @@ class AuthFragment : Fragment() {
     }
 
     private fun isAuthenticated() =
-        requireActivity()
-            .getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE)
-            .getString(AUTHENTICATED_SHARED_TOKEN, "")?.isNotEmpty() ?: false
+        sharedPref.getString(AUTHENTICATED_SHARED_TOKEN, "")?.isNotEmpty() ?: false
 
     private fun setUserAuth(response: Response<Me>) {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
+        sharedPref.edit {
             putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
             putString(AUTHENTICATED_SHARED_USERNAME, response.body()!!.username)
             putString(AUTHENTICATED_SHARED_TOKEN, response.body()!!.token)

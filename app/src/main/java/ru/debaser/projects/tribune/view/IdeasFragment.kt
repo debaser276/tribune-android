@@ -3,6 +3,7 @@ package ru.debaser.projects.tribune.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -17,8 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.android.synthetic.main.fragment_ideas.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.adapter.onScrolledToFooter
@@ -34,6 +37,7 @@ class IdeasFragment : Fragment(),
     IdeaAdapter.OnLinkClickListener
 {
     private val ideasViewModel: IdeasViewModel by viewModel()
+    private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
 
     companion object {
@@ -136,7 +140,7 @@ class IdeasFragment : Fragment(),
         }
 
     private fun clearCredentialsAndDeletePushToken() {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit { clear() }
+        sharedPref.edit { clear() }
         ideasViewModel.deleteToken()
         (activity as AppCompatActivity).supportActionBar?.subtitle = null
     }

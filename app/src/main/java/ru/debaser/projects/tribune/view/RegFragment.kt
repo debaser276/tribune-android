@@ -3,6 +3,7 @@ package ru.debaser.projects.tribune.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.fragment_reg.loginTil
 import kotlinx.android.synthetic.main.fragment_reg.passwordEt
 import kotlinx.android.synthetic.main.fragment_reg.passwordTil
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import retrofit2.Response
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.repository.Me
@@ -35,6 +38,7 @@ import java.io.IOException
 class RegFragment : Fragment() {
 
     private var avatarId: String = ""
+    private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1
@@ -90,7 +94,7 @@ class RegFragment : Fragment() {
     }
 
     private fun setUserAuth(response: Response<Me>) {
-        requireActivity().getSharedPreferences(API_SHARED_FILE, Context.MODE_PRIVATE).edit {
+        sharedPref.edit {
             putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
             putString(AUTHENTICATED_SHARED_USERNAME, response.body()!!.username)
             putString(AUTHENTICATED_SHARED_TOKEN, response.body()!!.token)
