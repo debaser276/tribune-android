@@ -8,13 +8,11 @@ import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 
 class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
-
     var onAvatarClickListener: OnAvatarClickListener? = null
     var onLikeClickListener: OnLikeClickListener? = null
     var onDislikeClickListener: OnDislikeClickListener? = null
     var onVotesClickListener: OnVotesClickListener? = null
     var onLinkClickListener: OnLinkClickListener? = null
-
     var ideas = mutableListOf<IdeaModel>()
 
     companion object {
