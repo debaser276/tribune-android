@@ -225,4 +225,11 @@ class IdeasFragment : Fragment(),
     override fun onLinkClickListener(idea: IdeaModel) {
         startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(idea.link)))
     }
+
+    override fun onStart() {
+        super.onStart()
+        if (ideaAdapter.ideas.isEmpty()) {
+            ideaAdapter.submit(ideasViewModel.ideas)
+        }
+    }
 }
