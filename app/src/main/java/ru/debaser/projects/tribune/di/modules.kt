@@ -29,7 +29,7 @@ val applicationModule = module {
     viewModel { IdeasViewModel(get()) }
     viewModel { (authorId: Long) -> IdeasByAuthorViewModel(get(), authorId) }
     viewModel { VotesViewModel(get()) }
-    factory { LoadingDialog(androidContext()) }
+    factory { (context: Context) -> LoadingDialog(context) }
     factory<SharedPreferences>(named(API_SHARED_FILE)) {
         androidContext().getSharedPreferences(
             API_SHARED_FILE,

@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_reg.passwordEt
 import kotlinx.android.synthetic.main.fragment_reg.passwordTil
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import retrofit2.Response
 import ru.debaser.projects.tribune.R
@@ -38,7 +39,7 @@ class RegFragment : Fragment() {
     private var avatarId: String = ""
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val repository: Repository by inject()
-    private val dialog: LoadingDialog by inject()
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1

@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_votes.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.VoteAdapter
 import ru.debaser.projects.tribune.model.VoteModel
@@ -26,7 +27,7 @@ class VotesFragment : Fragment(),
     VoteAdapter.OnItemClickListener
 {
     private val votesViewModel: VotesViewModel by viewModel()
-    private val dialog: LoadingDialog by inject()
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
     private val voteAdapter: VoteAdapter = VoteAdapter()
 
     override fun onCreateView(

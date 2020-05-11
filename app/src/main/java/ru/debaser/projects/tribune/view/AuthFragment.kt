@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import retrofit2.Response
 import ru.debaser.projects.tribune.*
@@ -24,7 +25,7 @@ import java.io.IOException
 class AuthFragment : Fragment() {
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val repository: Repository by inject()
-    private val dialog: LoadingDialog by inject()
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,

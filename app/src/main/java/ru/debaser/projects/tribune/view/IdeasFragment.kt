@@ -39,7 +39,7 @@ class IdeasFragment : Fragment(),
     private val ideasViewModel: IdeasViewModel by viewModel()
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
-    private val dialog: LoadingDialog by inject()
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
 
     companion object {
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
@@ -85,6 +85,7 @@ class IdeasFragment : Fragment(),
             ideasViewModel.refresh()
         }
 
+        dialog.setTitle(R.string.getting_ideas)
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
                 showLoadingDialog(it)

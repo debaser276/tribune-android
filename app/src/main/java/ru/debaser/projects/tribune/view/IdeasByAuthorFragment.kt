@@ -37,8 +37,8 @@ class IdeasByAuthorFragment : Fragment(),
         parametersOf(IdeasByAuthorFragmentArgs.fromBundle(arguments!!).authorId)
     }
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
-    private val dialog: LoadingDialog by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,

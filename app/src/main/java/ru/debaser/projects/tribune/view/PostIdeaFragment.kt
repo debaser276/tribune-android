@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_postidea.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.PostIdeaRequest
 import ru.debaser.projects.tribune.repository.Repository
@@ -28,7 +29,7 @@ import java.io.IOException
 
 class PostIdeaFragment : Fragment() {
     private val repository: Repository by inject()
-    private val dialog: LoadingDialog by inject()
+    private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
     private var mediaUrl: String = ""
 
     companion object {
