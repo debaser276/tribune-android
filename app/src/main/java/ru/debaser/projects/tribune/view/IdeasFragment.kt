@@ -39,6 +39,7 @@ class IdeasFragment : Fragment(),
     private val ideasViewModel: IdeasViewModel by viewModel()
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
+    private val dialog: LoadingDialog by inject()
 
     companion object {
         private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
@@ -61,11 +62,6 @@ class IdeasFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         (activity as AppCompatActivity).supportActionBar?.subtitle = context?.getUsername()
-
-        val dialog = LoadingDialog(
-            requireActivity(),
-            R.string.getting_ideas
-        )
 
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -91,7 +87,7 @@ class IdeasFragment : Fragment(),
 
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(dialog, it)
+                showLoadingDialog(it)
             }
             noAuthEvent.observe(viewLifecycleOwner) {
                 if (it) {
@@ -145,7 +141,7 @@ class IdeasFragment : Fragment(),
         (activity as AppCompatActivity).supportActionBar?.subtitle = null
     }
 
-    private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
+    private fun showLoadingDialog(show: Boolean) {
         if (show) {
             dialog.show()
         } else {

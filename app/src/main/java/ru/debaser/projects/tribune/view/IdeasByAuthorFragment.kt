@@ -38,7 +38,7 @@ class IdeasByAuthorFragment : Fragment(),
     }
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val ideaAdapter: IdeaAdapter = IdeaAdapter()
-
+    private val dialog: LoadingDialog by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,11 +50,6 @@ class IdeasByAuthorFragment : Fragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        val dialog = LoadingDialog(
-            requireActivity(),
-            R.string.getting_ideas
-        )
 
         fab.hide()
 
@@ -73,9 +68,10 @@ class IdeasByAuthorFragment : Fragment(),
             ideasViewModel.refresh()
         }
 
+        dialog.setTitle(R.string.getting_ideas)
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(dialog, it)
+                showLoadingDialog(it)
             }
             noAuthEvent.observe(viewLifecycleOwner) {
                 if (it) {
@@ -126,7 +122,7 @@ class IdeasByAuthorFragment : Fragment(),
         sharedPref.edit { clear() }
     }
 
-    private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
+    private fun showLoadingDialog(show: Boolean) {
         if (show) {
             dialog.show()
         } else {

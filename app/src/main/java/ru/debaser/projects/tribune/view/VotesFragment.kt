@@ -26,6 +26,7 @@ class VotesFragment : Fragment(),
     VoteAdapter.OnItemClickListener
 {
     private val votesViewModel: VotesViewModel by viewModel()
+    private val dialog: LoadingDialog by inject()
     private val voteAdapter: VoteAdapter = VoteAdapter()
 
     override fun onCreateView(
@@ -39,11 +40,6 @@ class VotesFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val dialog = LoadingDialog(
-            requireActivity(),
-            R.string.getting_ideas
-        )
-
         with (votesRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = voteAdapter.apply {
@@ -53,12 +49,13 @@ class VotesFragment : Fragment(),
         val args = VotesFragmentArgs.fromBundle(arguments!!)
         votesViewModel.getVotes(args.ideaId)
 
+        dialog.setTitle(R.string.getting_votes)
         with(votesViewModel) {
             votes.observe(viewLifecycleOwner) {
                 voteAdapter.submit(it.toMutableList())
             }
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(dialog, it)
+                showLoadingDialog(it)
             }
             showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)
@@ -66,7 +63,7 @@ class VotesFragment : Fragment(),
         }
     }
 
-    private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
+    private fun showLoadingDialog(show: Boolean) {
         if (show) {
             dialog.show()
         } else {

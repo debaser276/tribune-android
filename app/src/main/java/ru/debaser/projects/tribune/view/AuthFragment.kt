@@ -24,6 +24,7 @@ import java.io.IOException
 class AuthFragment : Fragment() {
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val repository: Repository by inject()
+    private val dialog: LoadingDialog by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,9 +45,10 @@ class AuthFragment : Fragment() {
                 passwordTil.error = getString(R.string.password_incorrect)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val dialog = LoadingDialog(
-                        requireActivity(),
-                        R.string.authentication).apply { show() }
+                    dialog.apply {
+                        setTitle(R.string.authentication)
+                        show()
+                    }
                     try {
                         val response =
                             repository.authenticate(

@@ -28,6 +28,7 @@ import java.io.IOException
 
 class PostIdeaFragment : Fragment() {
     private val repository: Repository by inject()
+    private val dialog: LoadingDialog by inject()
     private var mediaUrl: String = ""
 
     companion object {
@@ -60,9 +61,10 @@ class PostIdeaFragment : Fragment() {
         postIdeaBtn.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 if (mediaUrl.isNotEmpty() && contentEt.text.isNotEmpty()) {
-                    val dialog = LoadingDialog(
-                        requireActivity(),
-                        R.string.create_new_idea).apply { show() }
+                    dialog.apply {
+                        setTitle(R.string.create_new_idea)
+                        show()
+                    }
                     try {
                         val result =
                             repository.postIdea(
@@ -121,9 +123,10 @@ class PostIdeaFragment : Fragment() {
 
     private fun uploadImage(bitmap: Bitmap) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val dialog = LoadingDialog(
-                requireContext(),
-                R.string.image_uploading).apply { show() }
+            dialog.apply {
+                setTitle(R.string.image_uploading)
+                show()
+            }
             try {
                 val imageUploadResult =
                     repository.uploadImage(bitmap)

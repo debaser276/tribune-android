@@ -38,6 +38,7 @@ class RegFragment : Fragment() {
     private var avatarId: String = ""
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
     private val repository: Repository by inject()
+    private val dialog: LoadingDialog by inject()
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1
@@ -67,9 +68,10 @@ class RegFragment : Fragment() {
                 passwordTil.error = getString(R.string.password_incorrect)
             } else {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val dialog = LoadingDialog(
-                        requireActivity(),
-                        R.string.registration).apply { show() }
+                    dialog.apply {
+                        setTitle(R.string.registration)
+                        show()
+                    }
                     try {
                         val response = repository.register(
                             loginEt.text.toString(),
@@ -112,9 +114,10 @@ class RegFragment : Fragment() {
         addAvatarBtn.visibility = View.VISIBLE
         addAvatarBtn.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val dialog = LoadingDialog(
-                    requireContext(),
-                    R.string.set_avatar).apply { show() }
+                dialog.apply {
+                    setTitle(R.string.set_avatar)
+                    show()
+                }
                 try {
                     if (avatarId.isNotEmpty()) repository.addAvatar(avatarId)
                     findNavController().navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
@@ -172,9 +175,10 @@ class RegFragment : Fragment() {
 
     private fun uploadImage(bitmap: Bitmap) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val dialog = LoadingDialog(
-                requireContext(),
-                R.string.image_uploading).apply { show() }
+            dialog.apply {
+                setTitle(R.string.image_uploading)
+                show()
+            }
             try {
                 val imageUploadResult =
                     repository.uploadImage(bitmap)
