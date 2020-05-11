@@ -17,7 +17,7 @@ class VoteViewHolder(adapter: VoteAdapter, view: View): RecyclerView.ViewHolder(
         itemView.setOnClickListener {
             val currentPosition = adapterPosition
             if (currentPosition != RecyclerView.NO_POSITION) {
-                val item = adapter.list[currentPosition]
+                val item = adapter.votes[currentPosition]
                 adapter.onItemClickListener?.onItemClickListener(item)
             }
         }

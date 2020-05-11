@@ -6,24 +6,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.VoteAdapter
 import ru.debaser.projects.tribune.model.VoteModel
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.toast
+import ru.debaser.projects.tribune.viewmodel.VotesViewModel
 import java.io.IOException
 
 class VotesFragment : Fragment(),
     VoteAdapter.OnItemClickListener
 {
-    private val repository: Repository by inject()
-    private lateinit var voteAdapter: VoteAdapter
+    private val votesViewModel: VotesViewModel by viewModel()
+    private val voteAdapter: VoteAdapter = VoteAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,37 +38,39 @@ class VotesFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getVotes()
-    }
 
-    private fun getVotes() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val dialog = LoadingDialog(
-                requireContext(),
-                R.string.getting_votes).apply { show() }
-            try {
-                val args = VotesFragmentArgs.fromBundle(arguments!!)
-                val result = repository.getVotes(args.ideaId)
-                if (result.isSuccessful) {
-                    setAdapter(result.body()!!)
-                } else {
-                    toast(R.string.cant_upload_image)
-                }
-            } catch (e: IOException) {
-                toast(R.string.error_occurred)
-            } finally {
-                dialog.dismiss()
+        val dialog = LoadingDialog(
+            requireActivity(),
+            R.string.getting_ideas
+        )
+
+        with (votesRecV) {
+            layoutManager = LinearLayoutManager(requireActivity())
+            adapter = voteAdapter.apply {
+                onItemClickListener = this@VotesFragment
+            }
+        }
+        val args = VotesFragmentArgs.fromBundle(arguments!!)
+        votesViewModel.getVotes(args.ideaId)
+
+        with(votesViewModel) {
+            votes.observe(viewLifecycleOwner) {
+                voteAdapter.submit(it.toMutableList())
+            }
+            showLoadingDialogEvent.observe(viewLifecycleOwner) {
+                showLoadingDialog(dialog, it)
+            }
+            showToastEvent.observe(viewLifecycleOwner) {
+                toast(it)
             }
         }
     }
 
-    private fun setAdapter(list: List<VoteModel>) {
-        with (votesRecV) {
-            layoutManager = LinearLayoutManager(requireActivity())
-            voteAdapter = VoteAdapter(list.toMutableList()).apply {
-                onItemClickListener = this@VotesFragment
-            }
-            adapter = voteAdapter
+    private fun showLoadingDialog(dialog: LoadingDialog, show: Boolean) {
+        if (show) {
+            dialog.show()
+        } else {
+            dialog.dismiss()
         }
     }
 

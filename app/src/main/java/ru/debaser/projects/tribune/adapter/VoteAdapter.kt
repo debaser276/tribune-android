@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.VoteModel
 
-class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolder>() {
-
+class VoteAdapter(): RecyclerView.Adapter<VoteViewHolder>() {
+    var votes = mutableListOf<VoteModel>()
     var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VoteViewHolder =
@@ -17,10 +17,15 @@ class VoteAdapter(val list: List<VoteModel>): RecyclerView.Adapter<VoteViewHolde
                 .inflate(R.layout.vote_item_view, parent, false)
         )
 
-    override fun getItemCount(): Int = list.size
+    fun submit(newList: MutableList<VoteModel>) {
+        votes = newList
+        this.notifyDataSetChanged()
+    }
+
+    override fun getItemCount(): Int = votes.size
 
     override fun onBindViewHolder(holder: VoteViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(votes[position])
     }
 
     interface OnItemClickListener {
