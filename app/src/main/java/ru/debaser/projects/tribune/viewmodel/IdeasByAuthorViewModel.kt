@@ -212,18 +212,18 @@ class IdeasByAuthorViewModel(
 
     fun likeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            idea.likeActionPerforming = true
+            ideas[position].likeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
                 val response = Repository.like(idea.id)
                 if (response.isSuccessful) {
-                    idea.updateLikes(response.body()!!)
+                    ideas[position].updateLikes(response.body()!!)
                     _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                idea.likeActionPerforming = false
+                ideas[position].likeActionPerforming = false
                 _changeIdeasEvent.value = true
             }
         }
@@ -231,18 +231,18 @@ class IdeasByAuthorViewModel(
 
     fun dislikeClick(idea: IdeaModel, position: Int) {
         viewModelScope.launch {
-            idea.dislikeActionPerforming = true
+            ideas[position].dislikeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
                 val response = Repository.dislike(idea.id)
                 if (response.isSuccessful) {
-                    idea.updateDislikes(response.body()!!)
+                    ideas[position].updateDislikes(response.body()!!)
                     _changeIdeasEvent.value = true
                 }
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                idea.dislikeActionPerforming = false
+                ideas[position].dislikeActionPerforming = false
                 _changeIdeasEvent.value = true
             }
         }
