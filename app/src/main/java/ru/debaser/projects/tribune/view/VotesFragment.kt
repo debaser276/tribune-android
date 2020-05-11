@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.VoteAdapter
 import ru.debaser.projects.tribune.model.VoteModel
@@ -21,7 +22,7 @@ import java.io.IOException
 class VotesFragment : Fragment(),
     VoteAdapter.OnItemClickListener
 {
-
+    private val repository: Repository by inject()
     private lateinit var voteAdapter: VoteAdapter
 
     override fun onCreateView(
@@ -44,7 +45,7 @@ class VotesFragment : Fragment(),
                 R.string.getting_votes).apply { show() }
             try {
                 val args = VotesFragmentArgs.fromBundle(arguments!!)
-                val result = Repository.getVotes(args.ideaId)
+                val result = repository.getVotes(args.ideaId)
                 if (result.isSuccessful) {
                     setAdapter(result.body()!!)
                 } else {

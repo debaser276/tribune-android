@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.debaser.projects.tribune.R
-import ru.debaser.projects.tribune.adapter.IdeaAdapter
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
 import java.io.IOException
 
 class IdeasByAuthorViewModel(
+    private val repository: Repository,
     private val authorId: Long
 ) : ViewModel() {
 
@@ -166,7 +166,7 @@ class IdeasByAuthorViewModel(
     private fun getRecent() {
         viewModelScope.launch {
             try {
-                val result = Repository.getRecentByAuthor(authorId)
+                val result = repository.getRecentByAuthor(authorId)
                 when {
                     result.isSuccessful -> currentState.newData(result.body() ?: listOf())
                     result.code() == 401-> currentState.release()
@@ -181,7 +181,7 @@ class IdeasByAuthorViewModel(
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfterByAuthor(authorId, ideas[0].id)
+                val response = repository.getAfterByAuthor(authorId, ideas[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -197,7 +197,7 @@ class IdeasByAuthorViewModel(
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBeforeByAuthor(authorId, ideas[ideas.size - 1].id)
+                val response = repository.getBeforeByAuthor(authorId, ideas[ideas.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -215,7 +215,7 @@ class IdeasByAuthorViewModel(
             ideas[position].likeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
-                val response = Repository.like(idea.id)
+                val response = repository.like(idea.id)
                 if (response.isSuccessful) {
                     ideas[position].updateLikes(response.body()!!)
                     _changeIdeasEvent.value = true
@@ -234,7 +234,7 @@ class IdeasByAuthorViewModel(
             ideas[position].dislikeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
-                val response = Repository.dislike(idea.id)
+                val response = repository.dislike(idea.id)
                 if (response.isSuccessful) {
                     ideas[position].updateDislikes(response.body()!!)
                     _changeIdeasEvent.value = true

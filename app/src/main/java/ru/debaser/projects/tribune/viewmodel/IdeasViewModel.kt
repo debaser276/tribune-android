@@ -4,12 +4,13 @@ import androidx.lifecycle.*
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
 import ru.debaser.projects.tribune.repository.Repository
 import java.io.IOException
 
-class IdeasViewModel() : ViewModel() {
+class IdeasViewModel(private val repository: Repository) : ViewModel() {
 
     private var currentState: State<IdeaModel>
     var ideas = mutableListOf<IdeaModel>()
@@ -162,7 +163,7 @@ class IdeasViewModel() : ViewModel() {
     private fun getRecent() {
         viewModelScope.launch {
             try {
-                val result = Repository.getRecent()
+                val result = repository.getRecent()
                 when {
                     result.isSuccessful -> currentState.newData(result.body() ?: listOf())
                     result.code() == 401-> currentState.release()
@@ -177,7 +178,7 @@ class IdeasViewModel() : ViewModel() {
     private fun getAfter() {
         viewModelScope.launch {
             try {
-                val response = Repository.getAfter(ideas[0].id)
+                val response = repository.getAfter(ideas[0].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -193,7 +194,7 @@ class IdeasViewModel() : ViewModel() {
     private fun getBefore() {
         viewModelScope.launch {
             try {
-                val response = Repository.getBefore(ideas[ideas.size - 1].id)
+                val response = repository.getBefore(ideas[ideas.size - 1].id)
                 if (response.isSuccessful) {
                     val newIdeas = response.body()!!
                     currentState.newData(newIdeas)
@@ -211,7 +212,7 @@ class IdeasViewModel() : ViewModel() {
             ideas[position].likeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
-                val response = Repository.like(idea.id)
+                val response = repository.like(idea.id)
                 if (response.isSuccessful) {
                     ideas[position].updateLikes(response.body()!!)
                     _changeIdeasEvent.value = true
@@ -230,7 +231,7 @@ class IdeasViewModel() : ViewModel() {
             ideas[position].dislikeActionPerforming = true
             _changeIdeasEvent.value = true
             try {
-                val response = Repository.dislike(idea.id)
+                val response = repository.dislike(idea.id)
                 if (response.isSuccessful) {
                     ideas[position].updateDislikes(response.body()!!)
                     _changeIdeasEvent.value = true
@@ -247,7 +248,7 @@ class IdeasViewModel() : ViewModel() {
     fun regPushToken() {
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
             viewModelScope.launch {
-                Repository.registerPushToken(it.token)
+                repository.registerPushToken(it.token)
             }
         }
     }

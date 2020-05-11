@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_postidea.*
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.PostIdeaRequest
 import ru.debaser.projects.tribune.repository.Repository
@@ -26,7 +27,7 @@ import ru.debaser.projects.tribune.utils.toast
 import java.io.IOException
 
 class PostIdeaFragment : Fragment() {
-
+    private val repository: Repository by inject()
     private var mediaUrl: String = ""
 
     companion object {
@@ -64,7 +65,7 @@ class PostIdeaFragment : Fragment() {
                         R.string.create_new_idea).apply { show() }
                     try {
                         val result =
-                            Repository.postIdea(
+                            repository.postIdea(
                                 PostIdeaRequest(
                                     content = contentEt.text.toString(),
                                     media = mediaUrl,
@@ -125,7 +126,7 @@ class PostIdeaFragment : Fragment() {
                 R.string.image_uploading).apply { show() }
             try {
                 val imageUploadResult =
-                    Repository.uploadImage(bitmap)
+                    repository.uploadImage(bitmap)
                 if (imageUploadResult.isSuccessful) {
                     loadImage(imageIv, imageUploadResult.body()!!.id)
                     mediaUrl = imageUploadResult.body()!!.id

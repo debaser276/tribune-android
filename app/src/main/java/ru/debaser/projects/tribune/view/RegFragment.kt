@@ -1,7 +1,6 @@
 package ru.debaser.projects.tribune.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_reg.*
@@ -39,6 +37,7 @@ class RegFragment : Fragment() {
 
     private var avatarId: String = ""
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
+    private val repository: Repository by inject()
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1
@@ -72,13 +71,12 @@ class RegFragment : Fragment() {
                         requireActivity(),
                         R.string.registration).apply { show() }
                     try {
-                        val response = Repository.register(
+                        val response = repository.register(
                             loginEt.text.toString(),
                             passwordEt.text.toString()
                         )
                         if (response.isSuccessful) {
                             setUserAuth(response)
-                            Repository.createRetrofitWithAuthToken(response.body()!!.token)
                             addAvatar()
                         } else {
                             toast(R.string.registration_failed)
@@ -118,7 +116,7 @@ class RegFragment : Fragment() {
                     requireContext(),
                     R.string.set_avatar).apply { show() }
                 try {
-                    if (avatarId.isNotEmpty()) Repository.addAvatar(avatarId)
+                    if (avatarId.isNotEmpty()) repository.addAvatar(avatarId)
                     findNavController().navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
                 } catch (e: IOException) {
                     toast(R.string.error_occurred)
@@ -179,7 +177,7 @@ class RegFragment : Fragment() {
                 R.string.image_uploading).apply { show() }
             try {
                 val imageUploadResult =
-                    Repository.uploadImage(bitmap)
+                    repository.uploadImage(bitmap)
                 if (imageUploadResult.isSuccessful) {
                     loadImage(avatarIv, imageUploadResult.body()!!.id)
                     avatarId = imageUploadResult.body()!!.id

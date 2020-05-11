@@ -23,6 +23,7 @@ import java.io.IOException
 
 class AuthFragment : Fragment() {
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
+    private val repository: Repository by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,11 +31,7 @@ class AuthFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (isAuthenticated()) {
-            val token = sharedPref.getString(AUTHENTICATED_SHARED_TOKEN, "")
-            Repository.createRetrofitWithAuthToken(
-                token!!
-            )
-            this.findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
+            findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
         }
         return inflater.inflate(R.layout.fragment_auth, container, false)
     }
@@ -52,15 +49,12 @@ class AuthFragment : Fragment() {
                         R.string.authentication).apply { show() }
                     try {
                         val response =
-                            Repository.authenticate(
+                            repository.authenticate(
                                 loginEt.text.toString(),
                                 passwordEt.text.toString()
                             )
                         if (response.isSuccessful) {
                             setUserAuth(response)
-                            Repository.createRetrofitWithAuthToken(
-                                response.body()!!.token
-                            )
                             findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
                         } else {
                             toast(R.string.authentication_failed)
