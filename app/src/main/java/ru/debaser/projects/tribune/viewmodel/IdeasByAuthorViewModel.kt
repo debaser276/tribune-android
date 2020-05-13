@@ -22,8 +22,8 @@ class IdeasByAuthorViewModel(
     val changeIdeasEvent: LiveData<Boolean>
         get() = _changeIdeasEvent
 
-    private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
-    val showLoadingDialogEvent: LiveData<Boolean>
+    private val _showLoadingDialogEvent = MutableLiveData<Int?>()
+    val showLoadingDialogEvent: LiveData<Int?>
         get() = _showLoadingDialogEvent
 
     private val _noAuthEvent = MutableLiveData<Boolean>()
@@ -63,7 +63,7 @@ class IdeasByAuthorViewModel(
         State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
-            _showLoadingDialogEvent.value = true
+            _showLoadingDialogEvent.value = R.string.getting_ideas
             getRecent()
             _changeIdeasEvent.value = true
         }
@@ -73,11 +73,11 @@ class IdeasByAuthorViewModel(
         State<IdeaModel> {
         override fun fail() {
             currentState = EmptyError()
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _showEmptyErrorEvent.value = true
         }
         override fun newData(list: List<IdeaModel>) {
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             if (list.isEmpty()) {
                 _showToastEvent.value = R.string.no_idea_user
             } else {
@@ -87,7 +87,7 @@ class IdeasByAuthorViewModel(
             }
         }
         override fun release() {
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _noAuthEvent.value = true
         }
     }
@@ -96,7 +96,7 @@ class IdeasByAuthorViewModel(
         State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
-            _showLoadingDialogEvent.value = true
+            _showLoadingDialogEvent.value = R.string.getting_ideas
             getRecent()
             _changeIdeasEvent.value = true
         }
@@ -129,7 +129,7 @@ class IdeasByAuthorViewModel(
         }
         override fun fail() {
             currentState = Data()
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _showToastEvent.value = R.string.error_occurred
         }
     }

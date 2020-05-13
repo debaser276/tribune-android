@@ -58,7 +58,12 @@ class AuthFragment : Fragment() {
                 passwordTil.error = getString(R.string.password_incorrect)
             }
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                if (it) dialog.show() else dialog.dismiss()
+                with (dialog) {
+                    if (it != null) {
+                        setTitle(it)
+                        show()
+                    } else dismiss()
+                }
             }
             moveToIdeasFragmentEvent.observe(viewLifecycleOwner) {
                 findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())

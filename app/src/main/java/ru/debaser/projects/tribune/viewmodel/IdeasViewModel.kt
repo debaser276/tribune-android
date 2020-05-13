@@ -19,8 +19,8 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
     val changeIdeasEvent: LiveData<Boolean>
         get() = _changeIdeasEvent
 
-    private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
-    val showLoadingDialogEvent: LiveData<Boolean>
+    private val _showLoadingDialogEvent = MutableLiveData<Int?>()
+    val showLoadingDialogEvent: LiveData<Int?>
         get() = _showLoadingDialogEvent
 
     private val _noAuthEvent = MutableLiveData<Boolean>()
@@ -60,7 +60,7 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
         State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
-            _showLoadingDialogEvent.value = true
+            _showLoadingDialogEvent.value = R.string.getting_ideas
             getRecent()
             _changeIdeasEvent.value = true
         }
@@ -70,11 +70,11 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
         State<IdeaModel> {
         override fun fail() {
             currentState = EmptyError()
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _showEmptyErrorEvent.value = true
         }
         override fun newData(list: List<IdeaModel>) {
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             if (list.isEmpty()) {
                 _showToastEvent.value = R.string.no_idea
             } else {
@@ -84,7 +84,7 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
             }
         }
         override fun release() {
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _noAuthEvent.value = true
         }
     }
@@ -93,7 +93,7 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
         State<IdeaModel> {
         override fun refresh() {
             currentState = EmptyProgress()
-            _showLoadingDialogEvent.value = true
+            _showLoadingDialogEvent.value = R.string.getting_ideas
             getRecent()
             _changeIdeasEvent.value = true
         }
@@ -126,7 +126,7 @@ class IdeasViewModel(private val repository: Repository) : ViewModel() {
         }
         override fun fail() {
             currentState = Data()
-            _showLoadingDialogEvent.value = false
+            _showLoadingDialogEvent.value = null
             _showToastEvent.value = R.string.error_occurred
         }
     }

@@ -85,10 +85,14 @@ class IdeasFragment : Fragment(),
             ideasViewModel.refresh()
         }
 
-        dialog.setTitle(R.string.getting_ideas)
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                if (it) dialog.show() else dialog.dismiss()
+                with (dialog) {
+                    if (it != null) {
+                        setTitle(it)
+                        show()
+                    } else dismiss()
+                }
             }
             noAuthEvent.observe(viewLifecycleOwner) {
                 if (it) {

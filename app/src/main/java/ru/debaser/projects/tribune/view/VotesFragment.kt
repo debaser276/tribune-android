@@ -50,13 +50,17 @@ class VotesFragment : Fragment(),
         val args = VotesFragmentArgs.fromBundle(arguments!!)
         votesViewModel.getVotes(args.ideaId)
 
-        dialog.setTitle(R.string.getting_votes)
         with(votesViewModel) {
             votes.observe(viewLifecycleOwner) {
                 voteAdapter.submit(it.toMutableList())
             }
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                if (it) dialog.show() else dialog.dismiss()
+                with (dialog) {
+                    if (it != null) {
+                        setTitle(it)
+                        show()
+                    } else dismiss()
+                }
             }
             showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)

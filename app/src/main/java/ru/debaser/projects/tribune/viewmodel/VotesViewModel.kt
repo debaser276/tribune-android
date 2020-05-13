@@ -16,8 +16,8 @@ class VotesViewModel(private val repository: Repository): ViewModel() {
     val votes: LiveData<List<VoteModel>>
         get() = _votes
 
-    private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
-    val showLoadingDialogEvent: LiveData<Boolean>
+    private val _showLoadingDialogEvent = MutableLiveData<Int?>()
+    val showLoadingDialogEvent: LiveData<Int?>
         get() = _showLoadingDialogEvent
 
     private val _showToastEvent = SingleLiveEvent<Int>()
@@ -26,7 +26,7 @@ class VotesViewModel(private val repository: Repository): ViewModel() {
 
     fun getVotes(ideaId :Long) {
         viewModelScope.launch {
-            _showLoadingDialogEvent.value = true
+            _showLoadingDialogEvent.value = R.string.getting_votes
             try {
                 val result = repository.getVotes(ideaId)
                 if (result.isSuccessful) {
@@ -37,7 +37,7 @@ class VotesViewModel(private val repository: Repository): ViewModel() {
             } catch (e: IOException) {
                 _showToastEvent.value = R.string.error_occurred
             } finally {
-                _showLoadingDialogEvent.value = false
+                _showLoadingDialogEvent.value = null
             }
         }
     }

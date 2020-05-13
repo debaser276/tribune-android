@@ -25,8 +25,8 @@ class AuthViewModel(
     val passwordErrorEvent: LiveData<Boolean>
         get() = _passwordErrorEvent
 
-    private val _showLoadingDialogEvent = MutableLiveData<Boolean>()
-    val showLoadingDialogEvent: LiveData<Boolean>
+    private val _showLoadingDialogEvent = MutableLiveData<Int?>()
+    val showLoadingDialogEvent: LiveData<Int?>
         get() = _showLoadingDialogEvent
 
     private val _moveToIdeasFragmentEvent = MutableLiveData<Boolean>()
@@ -42,7 +42,7 @@ class AuthViewModel(
             _passwordErrorEvent.value = true
         } else {
             viewModelScope.launch {
-                _showLoadingDialogEvent.value = true
+                _showLoadingDialogEvent.value = R.string.authentication
                 try {
                     val response =
                         repository.authenticate(login, password)
@@ -55,7 +55,7 @@ class AuthViewModel(
                 } catch (e: IOException) {
                     _showToastEvent.value = R.string.error_occurred
                 } finally {
-                    _showLoadingDialogEvent.value = false
+                    _showLoadingDialogEvent.value = null
                 }
             }
         }
