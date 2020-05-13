@@ -8,6 +8,8 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,13 +34,14 @@ import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.repository.Me
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.*
+import ru.debaser.projects.tribune.viewmodel.RegViewModel
 import java.io.IOException
+import androidx.lifecycle.observe
+import ru.debaser.projects.tribune.view.AuthFragmentDirections.actionAuthFragmentToIdeasFragment
 
 class RegFragment : Fragment() {
 
-    private var avatarId: String = ""
-    private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
-    private val repository: Repository by inject()
+    private val regViewModel: RegViewModel by inject()
     private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
 
     companion object {
@@ -61,47 +64,43 @@ class RegFragment : Fragment() {
         }
         regBtn.setOnClickListener {
             hideKeyboard()
-            val password = passwordEt.text.toString()
-            val passwordRepeated = passwordConfirmEt.text.toString()
-            if (password != passwordRepeated) {
-                passwordEt.error = getString(R.string.passwords_not_match)
-            } else if (!isValid(passwordEt.text.toString())) {
-                passwordTil.error = getString(R.string.password_incorrect)
-            } else {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    dialog.apply {
-                        setTitle(R.string.registration)
+            regViewModel.register(
+                loginEt.text.toString(),
+                passwordEt.text.toString(),
+                passwordConfirmEt.text.toString()
+            )
+        }
+        passwordConfirmEt.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                passwordTil.error = null
+            }
+        })
+        with (regViewModel) {
+            passwordErrorEvent.observe(viewLifecycleOwner) {
+                passwordTil.error = getString(it)
+            }
+            showLoadingDialogEvent.observe(viewLifecycleOwner) {
+                with (dialog) {
+                    if (it != null) {
+                        setTitle(it)
                         show()
-                    }
-                    try {
-                        val response = repository.register(
-                            loginEt.text.toString(),
-                            passwordEt.text.toString()
-                        )
-                        if (response.isSuccessful) {
-                            setUserAuth(response)
-                            addAvatar()
-                        } else {
-                            toast(R.string.registration_failed)
-                        }
-                    } catch (e: IOException) {
-                        toast(R.string.error_occurred)
-                    } finally {
-                        dialog.dismiss()
-                    }
+                    } else dismiss()
                 }
             }
-        }
-    }
-
-    private fun setUserAuth(response: Response<Me>) {
-        sharedPref.edit {
-            putLong(AUTHENTICATED_SHARED_ID, response.body()!!.id)
-            putString(AUTHENTICATED_SHARED_USERNAME, response.body()!!.username)
-            putString(AUTHENTICATED_SHARED_TOKEN, response.body()!!.token)
-            putBoolean(AUTHENTICATED_SHARED_ISHATER, response.body()!!.isHater)
-            putBoolean(AUTHENTICATED_SHARED_ISPROMOTER, response.body()!!.isPromoter)
-            putBoolean(AUTHENTICATED_SHARED_ISREADER, response.body()!!.isReader)
+            addingAvatarEvent.observe(viewLifecycleOwner) {
+                this@RegFragment.addAvatar()
+            }
+            showToastEvent.observe(viewLifecycleOwner) {
+                toast(it)
+            }
+            moveToIdeasFragmentEvent.observe(viewLifecycleOwner) {
+                findNavController().navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
+            }
+            avatarId.observe(viewLifecycleOwner) {
+                loadImage(avatarIv, it)
+            }
         }
     }
 
@@ -114,20 +113,7 @@ class RegFragment : Fragment() {
         avatarRl.visibility = View.VISIBLE
         addAvatarBtn.visibility = View.VISIBLE
         addAvatarBtn.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                dialog.apply {
-                    setTitle(R.string.set_avatar)
-                    show()
-                }
-                try {
-                    if (avatarId.isNotEmpty()) repository.addAvatar(avatarId)
-                    findNavController().navigate(RegFragmentDirections.actionRegFragmentToIdeasFragment())
-                } catch (e: IOException) {
-                    toast(R.string.error_occurred)
-                } finally {
-                    dialog.dismiss()
-                }
-            }
+            regViewModel.addAvatar()
         }
         avatarIv.setOnClickListener {
             val items = resources.getStringArray(R.array.post_item_list)
@@ -149,7 +135,7 @@ class RegFragment : Fragment() {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     val bitmap = data.extras?.get("data") as Bitmap
-                    uploadImage(bitmap)
+                    regViewModel.uploadImage(bitmap)
                 }
                 REQUEST_IMAGE_PICK -> {
                     val selectedPhotoUri = data.data
@@ -164,35 +150,12 @@ class RegFragment : Fragment() {
                                 val source = ImageDecoder.createSource(requireActivity().contentResolver, selectedPhotoUri)
                                 ImageDecoder.decodeBitmap(source)
                             }
-                            uploadImage(bitmap)
+                            regViewModel.uploadImage(bitmap)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
-            }
-        }
-    }
-
-    private fun uploadImage(bitmap: Bitmap) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            dialog.apply {
-                setTitle(R.string.image_uploading)
-                show()
-            }
-            try {
-                val imageUploadResult =
-                    repository.uploadImage(bitmap)
-                if (imageUploadResult.isSuccessful) {
-                    loadImage(avatarIv, imageUploadResult.body()!!.id)
-                    avatarId = imageUploadResult.body()!!.id
-                } else {
-                    toast(R.string.cant_upload_image)
-                }
-            } catch (e: IOException) {
-                toast(R.string.error_occurred)
-            } finally {
-                dialog.dismiss()
             }
         }
     }
@@ -212,10 +175,7 @@ class RegFragment : Fragment() {
     }
 
     private fun chooseFromGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent,
-            REQUEST_IMAGE_PICK
-        )
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
     }
 }
