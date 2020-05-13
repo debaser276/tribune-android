@@ -58,7 +58,7 @@ class AuthFragment : Fragment() {
                 passwordTil.error = getString(R.string.password_incorrect)
             }
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(it)
+                if (it) dialog.show() else dialog.dismiss()
             }
             moveToIdeasFragmentEvent.observe(viewLifecycleOwner) {
                 findNavController().navigate(AuthFragmentDirections.actionAuthFragmentToIdeasFragment())
@@ -66,14 +66,6 @@ class AuthFragment : Fragment() {
             showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)
             }
-        }
-    }
-
-    private fun showLoadingDialog(show: Boolean) {
-        if (show) {
-            dialog.show()
-        } else {
-            dialog.dismiss()
         }
     }
 

@@ -56,19 +56,11 @@ class VotesFragment : Fragment(),
                 voteAdapter.submit(it.toMutableList())
             }
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(it)
+                if (it) dialog.show() else dialog.dismiss()
             }
             showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)
             }
-        }
-    }
-
-    private fun showLoadingDialog(show: Boolean) {
-        if (show) {
-            dialog.show()
-        } else {
-            dialog.dismiss()
         }
     }
 

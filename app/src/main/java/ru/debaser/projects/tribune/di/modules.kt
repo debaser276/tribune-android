@@ -21,16 +21,14 @@ import ru.debaser.projects.tribune.repository.interceptor.InjectAuthTokenInterce
 import ru.debaser.projects.tribune.utils.API_SHARED_FILE
 import ru.debaser.projects.tribune.utils.BASE_URL
 import ru.debaser.projects.tribune.view.LoadingDialog
-import ru.debaser.projects.tribune.viewmodel.AuthViewModel
-import ru.debaser.projects.tribune.viewmodel.IdeasByAuthorViewModel
-import ru.debaser.projects.tribune.viewmodel.IdeasViewModel
-import ru.debaser.projects.tribune.viewmodel.VotesViewModel
+import ru.debaser.projects.tribune.viewmodel.*
 
 val applicationModule = module {
     viewModel { IdeasViewModel(get()) }
     viewModel { (authorId: Long) -> IdeasByAuthorViewModel(get(), authorId) }
     viewModel { VotesViewModel(get()) }
     viewModel { AuthViewModel(get(), get(named(API_SHARED_FILE))) }
+    viewModel { RegViewModel(get(), get(named(API_SHARED_FILE))) }
     factory { (context: Context) -> LoadingDialog(context) }
     factory<SharedPreferences>(named(API_SHARED_FILE)) {
         androidContext().getSharedPreferences(

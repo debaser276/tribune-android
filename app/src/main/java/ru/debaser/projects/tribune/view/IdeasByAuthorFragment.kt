@@ -71,7 +71,7 @@ class IdeasByAuthorFragment : Fragment(),
         dialog.setTitle(R.string.getting_ideas)
         with (ideasViewModel) {
             showLoadingDialogEvent.observe(viewLifecycleOwner) {
-                showLoadingDialog(it)
+                if (it) dialog.show() else dialog.dismiss()
             }
             noAuthEvent.observe(viewLifecycleOwner) {
                 if (it) {
@@ -120,14 +120,6 @@ class IdeasByAuthorFragment : Fragment(),
 
     private fun clearCredentialsAndDeletePushToken() {
         sharedPref.edit { clear() }
-    }
-
-    private fun showLoadingDialog(show: Boolean) {
-        if (show) {
-            dialog.show()
-        } else {
-            dialog.dismiss()
-        }
     }
 
     private fun showEmptyError() {
