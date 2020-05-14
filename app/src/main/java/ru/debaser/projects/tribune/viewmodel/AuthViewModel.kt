@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import org.koin.core.qualifier.named
 import retrofit2.Response
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.repository.Me

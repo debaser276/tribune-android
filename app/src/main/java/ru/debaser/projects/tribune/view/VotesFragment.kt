@@ -5,23 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_votes.*
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.adapter.VoteAdapter
 import ru.debaser.projects.tribune.model.VoteModel
-import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.toast
 import ru.debaser.projects.tribune.viewmodel.VotesViewModel
-import java.io.IOException
 
 class VotesFragment : Fragment(),
     VoteAdapter.OnItemClickListener
