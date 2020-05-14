@@ -29,6 +29,7 @@ val applicationModule = module {
     viewModel { VotesViewModel(get()) }
     viewModel { AuthViewModel(get(), get(named(API_SHARED_FILE))) }
     viewModel { RegViewModel(get(), get(named(API_SHARED_FILE))) }
+    viewModel { PostIdeaViewModel(get()) }
     factory { (context: Context) -> LoadingDialog(context) }
     factory<SharedPreferences>(named(API_SHARED_FILE)) {
         androidContext().getSharedPreferences(

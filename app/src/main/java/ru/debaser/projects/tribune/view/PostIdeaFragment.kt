@@ -14,6 +14,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -25,12 +26,13 @@ import ru.debaser.projects.tribune.*
 import ru.debaser.projects.tribune.repository.PostIdeaRequest
 import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.toast
+import ru.debaser.projects.tribune.viewmodel.PostIdeaViewModel
 import java.io.IOException
 
 class PostIdeaFragment : Fragment() {
-    private val repository: Repository by inject()
+
+    private val postIdeaViewModel: PostIdeaViewModel by inject()
     private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
-    private var mediaUrl: String = ""
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 1
@@ -60,33 +62,33 @@ class PostIdeaFragment : Fragment() {
             builder.show()
         }
         postIdeaBtn.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                if (mediaUrl.isNotEmpty() && contentEt.text.isNotEmpty()) {
-                    dialog.apply {
-                        setTitle(R.string.create_new_idea)
+            if (contentEt.text.isNotEmpty() && postIdeaViewModel.media.value != null) {
+                postIdeaViewModel.postIdea(
+                    PostIdeaRequest(
+                        contentEt.text.toString(),
+                        postIdeaViewModel.media.value!!,
+                        linkEt.text.toString()
+                    )
+                )
+            }
+        }
+        with(postIdeaViewModel) {
+            showLoadingDialogEvent.observe(viewLifecycleOwner) {
+                with (dialog) {
+                    if (it != null) {
+                        setTitle(it)
                         show()
-                    }
-                    try {
-                        val result =
-                            repository.postIdea(
-                                PostIdeaRequest(
-                                    content = contentEt.text.toString(),
-                                    media = mediaUrl,
-                                    link = linkEt.text.toString()
-                                )
-                            )
-                        if (result.isSuccessful) {
-                            toast(R.string.success_idea)
-                            findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
-                        } else {
-                            toast(R.string.error_occurred)
-                        }
-                    } catch (e: IOException) {
-                        toast(R.string.error_occurred)
-                    } finally {
-                        dialog.dismiss()
-                    }
+                    } else dismiss()
                 }
+            }
+            showToastEvent.observe(viewLifecycleOwner) {
+                toast(it)
+            }
+            moveToIdeasFragmentEvent.observe(viewLifecycleOwner) {
+                findNavController().navigate(PostIdeaFragmentDirections.actionPostIdeaFragmentToIdeasFragment())
+            }
+            media.observe(viewLifecycleOwner) {
+                loadImage(imageIv, it)
             }
         }
     }
@@ -97,7 +99,7 @@ class PostIdeaFragment : Fragment() {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     val bitmap = data.extras?.get("data") as Bitmap
-                    uploadImage(bitmap)
+                    postIdeaViewModel.uploadImage(bitmap)
                 }
                 REQUEST_IMAGE_PICK -> {
                     val selectedPhotoUri = data.data
@@ -112,35 +114,12 @@ class PostIdeaFragment : Fragment() {
                                 val source = ImageDecoder.createSource(requireActivity().contentResolver, selectedPhotoUri)
                                 ImageDecoder.decodeBitmap(source)
                             }
-                            uploadImage(bitmap)
+                            postIdeaViewModel.uploadImage(bitmap)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
-            }
-        }
-    }
-
-    private fun uploadImage(bitmap: Bitmap) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            dialog.apply {
-                setTitle(R.string.image_uploading)
-                show()
-            }
-            try {
-                val imageUploadResult =
-                    repository.uploadImage(bitmap)
-                if (imageUploadResult.isSuccessful) {
-                    loadImage(imageIv, imageUploadResult.body()!!.id)
-                    mediaUrl = imageUploadResult.body()!!.id
-                } else {
-                    toast(R.string.cant_upload_image)
-                }
-            } catch (e: IOException) {
-                toast(R.string.error_occurred)
-            } finally {
-                dialog.dismiss()
             }
         }
     }

@@ -2,7 +2,6 @@ package ru.debaser.projects.tribune.view
 
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
@@ -15,9 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_reg.*
@@ -25,19 +22,12 @@ import kotlinx.android.synthetic.main.fragment_reg.loginEt
 import kotlinx.android.synthetic.main.fragment_reg.loginTil
 import kotlinx.android.synthetic.main.fragment_reg.passwordEt
 import kotlinx.android.synthetic.main.fragment_reg.passwordTil
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
-import retrofit2.Response
 import ru.debaser.projects.tribune.R
-import ru.debaser.projects.tribune.repository.Me
-import ru.debaser.projects.tribune.repository.Repository
 import ru.debaser.projects.tribune.utils.*
 import ru.debaser.projects.tribune.viewmodel.RegViewModel
-import java.io.IOException
 import androidx.lifecycle.observe
-import ru.debaser.projects.tribune.view.AuthFragmentDirections.actionAuthFragmentToIdeasFragment
 
 class RegFragment : Fragment() {
 
@@ -90,7 +80,7 @@ class RegFragment : Fragment() {
                 }
             }
             addingAvatarEvent.observe(viewLifecycleOwner) {
-                this@RegFragment.addAvatar()
+                addAvatarView()
             }
             showToastEvent.observe(viewLifecycleOwner) {
                 toast(it)
@@ -104,7 +94,7 @@ class RegFragment : Fragment() {
         }
     }
 
-    private fun addAvatar() {
+    private fun addAvatarView() {
         loginTil.visibility = View.GONE
         passwordTil.visibility = View.GONE
         passwordConfirmTil.visibility = View.GONE
