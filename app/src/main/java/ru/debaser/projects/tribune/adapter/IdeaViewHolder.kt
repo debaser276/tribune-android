@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.idea_item_view.view.*
 import ru.debaser.projects.tribune.model.IdeaModel
+import ru.debaser.projects.tribune.model.IdeaUiModel
 import ru.debaser.projects.tribune.utils.getUserId
 import java.text.SimpleDateFormat
 import java.util.*
@@ -53,34 +54,36 @@ class IdeaViewHolder(adapter: IdeaAdapter, view: View) : RecyclerView.ViewHolder
         }
     }
 
-    fun bind(idea: IdeaModel) {
-            with (itemView) {
-            if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
-            authorTv.text = idea.author
-            dateTv.text = SimpleDateFormat("dd MMM hh:mm").format(Date(idea.created * 1000L))
-            if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
-            contentTv.text = idea.content
-            loadImages(imageIv, idea.media)
+    fun bind(ideaUiModel: IdeaUiModel) {
+        with (itemView) {
+            with (ideaUiModel) {
+                if (idea.avatar.isNotEmpty()) loadImages(avatarIv, idea.avatar)
+                authorTv.text = idea.author
+                dateTv.text = dateFormatted
+                if (idea.link.isEmpty()) linkIv.visibility = View.INVISIBLE
+                contentTv.text = idea.content
+                loadImages(imageIv, idea.media)
 
-            when (idea.isHater) {
-                true -> haterTv.visibility = View.VISIBLE
-                false -> haterTv.visibility = View.GONE
+                when (idea.isHater) {
+                    true -> haterTv.visibility = View.VISIBLE
+                    false -> haterTv.visibility = View.GONE
+                }
+
+                when (idea.isPromoter) {
+                    true -> promoterTv.visibility = View.VISIBLE
+                    false -> promoterTv.visibility = View.GONE
+                }
+
+                likesTv.setTextColor(contentTv.textColors)
+                likeIv.setColorFilter(Color.BLACK)
+
+                dislikesTv.setTextColor(contentTv.textColors)
+                dislikeIv.setColorFilter(Color.BLACK)
+
+                like(idea)
+
+                dislike(idea)
             }
-
-            when (idea.isPromoter) {
-                true -> promoterTv.visibility = View.VISIBLE
-                false -> promoterTv.visibility = View.GONE
-            }
-
-            likesTv.setTextColor(contentTv.textColors)
-            likeIv.setColorFilter(Color.BLACK)
-
-            dislikesTv.setTextColor(contentTv.textColors)
-            dislikeIv.setColorFilter(Color.BLACK)
-
-            like(idea)
-
-            dislike(idea)
         }
     }
 

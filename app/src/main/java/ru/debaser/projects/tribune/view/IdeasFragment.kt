@@ -38,7 +38,7 @@ class IdeasFragment : Fragment(),
 {
     private val ideasViewModel: IdeasViewModel by viewModel()
     private val sharedPref: SharedPreferences by inject(named(API_SHARED_FILE))
-    private val ideaAdapter: IdeaAdapter = IdeaAdapter()
+    private lateinit var ideaAdapter: IdeaAdapter
     private val dialog: LoadingDialog by inject { parametersOf(requireActivity()) }
 
     companion object {
@@ -65,6 +65,7 @@ class IdeasFragment : Fragment(),
 
         with (ideasRecV) {
             layoutManager = LinearLayoutManager(requireActivity())
+            ideaAdapter = IdeaAdapter()
             adapter = ideaAdapter.apply {
                 onAvatarClickListener = this@IdeasFragment
                 onLikeClickListener = this@IdeasFragment

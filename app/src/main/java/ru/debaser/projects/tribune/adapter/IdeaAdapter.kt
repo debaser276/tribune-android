@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.debaser.projects.tribune.R
 import ru.debaser.projects.tribune.model.IdeaModel
+import ru.debaser.projects.tribune.model.IdeaUiModel
+import java.text.SimpleDateFormat
 
 class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
     var onAvatarClickListener: OnAvatarClickListener? = null
@@ -14,6 +16,7 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
     var onVotesClickListener: OnVotesClickListener? = null
     var onLinkClickListener: OnLinkClickListener? = null
     var ideas = mutableListOf<IdeaModel>()
+    private val dateFormatter = SimpleDateFormat("dd MMM hh:mm")
 
     companion object {
         const val PAYLOAD_LIKE = "payload_like"
@@ -38,7 +41,13 @@ class IdeaAdapter: RecyclerView.Adapter<IdeaViewHolder>() {
     override fun getItemCount(): Int = ideas.size
 
     override fun onBindViewHolder(holder: IdeaViewHolder, position: Int) {
-        holder.bind(ideas[position])
+        holder.bind(
+            IdeaUiModel(
+                ideas[position],
+                dateFormatter.format(ideas[position].created * 1000
+                )
+            )
+        )
     }
 
     override fun onBindViewHolder(

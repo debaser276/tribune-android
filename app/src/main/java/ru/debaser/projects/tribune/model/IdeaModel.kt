@@ -1,5 +1,7 @@
 package ru.debaser.projects.tribune.model
 
+data class IdeaUiModel(val idea: IdeaModel, val dateFormatted: String)
+
 data class IdeaModel (
     val id: Long,
     val authorId: Long,
